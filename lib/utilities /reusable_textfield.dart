@@ -11,6 +11,7 @@ class FormContainerWidget extends StatefulWidget {
   final String? hintText;
   final String? labelText;
   final String? helperText;
+  final int? maxLines;
   final FormFieldSetter<String>? onSaved;
   final FormFieldValidator<String>? validator;
   final ValueChanged<String>? onFieldSubmitted;
@@ -23,6 +24,7 @@ class FormContainerWidget extends StatefulWidget {
     this.hintText,
     this.labelText,
     this.helperText,
+    this.maxLines,
     this.onSaved,
     this.validator,
     this.onFieldSubmitted,
@@ -56,6 +58,7 @@ class _FormContainerWidgetState extends State<FormContainerWidget> {
             borderRadius: BorderRadius.circular(10),
           ),
           child: TextFormField(
+            maxLines: widget.maxLines,
             style: TextStyle(color: Colors.black),
             controller: widget.controller,
             keyboardType: widget.inputType,

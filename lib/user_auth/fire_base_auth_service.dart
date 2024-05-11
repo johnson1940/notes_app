@@ -37,4 +37,15 @@ class FirebaseAuthService {
     return null;
 
   }
+
+
+  Future<String?> getCurrentFirebaseUserUID() async {
+    final FirebaseAuth auth = FirebaseAuth.instance;
+    final User? user = auth.currentUser;
+    if (user != null) {
+      return user.uid;
+    } else {
+      return null;
+    }
+  }
 }
