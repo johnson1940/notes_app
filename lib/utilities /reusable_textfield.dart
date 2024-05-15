@@ -70,7 +70,7 @@ class _FormContainerWidgetState extends State<FormContainerWidget> {
             decoration: InputDecoration(
               border: InputBorder.none,
               filled: true,
-              fillColor: Colors.grey.withOpacity(0.12),
+              fillColor: Color.fromRGBO(246, 245, 245, 1),
               hintText: widget.hintText,
               hintStyle: TextStyle(color: Colors.black45),
               suffixIcon: GestureDetector(
@@ -80,7 +80,10 @@ class _FormContainerWidgetState extends State<FormContainerWidget> {
                   });
                 },
                 child:
-                widget.isPasswordField==true? Icon(_obscureText ? Icons.visibility_off : Icons.visibility, color: _obscureText == false ? Colors.blue : Colors.grey,) : Text(""),
+                widget.isPasswordField == true?
+                Icon(_obscureText ? Icons.visibility_off :
+                Icons.visibility, color: _obscureText == false
+                    ? Colors.blue : Colors.grey,) : Text(""),
               ),
             ),
           ),

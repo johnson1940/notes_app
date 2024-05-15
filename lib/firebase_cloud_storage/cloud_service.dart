@@ -8,12 +8,16 @@ class FireStoreService {
       String title,
       String description,
       String userId,
+      String categories,
+      List<String> tags,
       {String? timeStamp}
       ) {
     return notes.add({
       'title': title,
       'description' : description,
       'userId' : userId,
+      'categories' : categories,
+      'tags' : tags,
       'timeStamp' : Timestamp.now(),
     });
   }
