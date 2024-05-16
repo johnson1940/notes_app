@@ -74,9 +74,9 @@ class NoteProvider extends ChangeNotifier {
   //   print('tags : ${tags}');
   // }
 
-  List<dynamic> _tagsSelected = [];
+  List<String> _tagsSelected = [];
 
-  List<dynamic> get tagsSelected => _tagsSelected;
+  List<String> get tagsSelected => _tagsSelected;
 
   void addSelectedTags(String tagName) {
     if (!_tagsSelected.contains(tagName)) {
@@ -111,7 +111,7 @@ class NoteProvider extends ChangeNotifier {
       // Filter notes based on the entered tag
       _tagsSelected = noteList
           .where((note) => note['tags'] != null && note['tags'].contains(tag))
-          .map((note) => note['tags'])
+          .map<List<String>>((note) => List<String>.from(note['tags'])) // Convert dynamic list to List<String>
           .expand((tags) => tags)
           .toSet()
           .toList();

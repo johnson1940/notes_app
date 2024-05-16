@@ -259,7 +259,7 @@ class _NotesAddingScreenState extends State<NotesAddingScreen> {
                    _descriptionController.text,
                     user.uid,
                     notesProvider.selectedCategories ?? '',
-                    notesProvider.tagsSelected as List<String>,
+                    notesProvider.tagsSelected,
                );
                _titleController.clear();
                _descriptionController.clear();

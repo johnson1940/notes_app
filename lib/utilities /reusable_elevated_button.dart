@@ -4,6 +4,7 @@ class CustomElevatedButton extends StatelessWidget {
   final double? width;
   final double? height;
   final Color color;
+  final Color? textColor;
   final String text;
   final VoidCallback onPressed;
 
@@ -11,6 +12,7 @@ class CustomElevatedButton extends StatelessWidget {
     Key? key,
     this.width,
     this.height,
+    this.textColor,
     required this.color,
     required this.text,
     required this.onPressed,
@@ -30,7 +32,10 @@ class CustomElevatedButton extends StatelessWidget {
           style: ButtonStyle(
             backgroundColor: MaterialStateProperty.all<Color>(color),
           ),
-          child: Text(text),
+          child: Text(text,
+          style: TextStyle(
+            color: textColor,
+          ),),
         ),
       ),
     );

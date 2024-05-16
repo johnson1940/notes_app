@@ -42,7 +42,7 @@ class _LoginScreenState extends State<LoginScreen> {
             Image.asset(
                 width: 120,
                 height: 120,
-                'assets/images/Notes Icon.jpeg'
+                'assets/images/notes_app1.png'
             ),
             SizedBox(height: 80),
             Padding(
@@ -64,8 +64,9 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             SizedBox(height: 40),
             CustomElevatedButton(
-                color: Color.fromRGBO(252, 208, 75, 1),
+                color: Color.fromRGBO(10,150,248,1),
                 text: "Login",
+                textColor: Colors.white,
                 onPressed: (){
                   _signIn();
                 }

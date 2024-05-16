@@ -3,9 +3,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../firebase_cloud_storage/cloud_service.dart';
+import '../utilities /reusable_elevated_button.dart';
 import '../viewModel/notes_app_viewModel.dart';
 
 class HomePage extends StatefulWidget {
@@ -33,44 +35,63 @@ class _HomePageState extends State<HomePage> {
       child: Scaffold(
         appBar: _isSearching
             ? AppBar(
-          toolbarHeight: 70,
+           toolbarHeight: 70,
           automaticallyImplyLeading: false,
           title: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Row(
               children: [
                 Expanded(
-                  child: TextField(
-                    controller: _searchController,
-                    decoration: InputDecoration(
-                      hintText: 'Search by tag',
-                      border: InputBorder.none,
+                  child: Container(
+                    height: 40,
+                    decoration: BoxDecoration(
+                      border: Border.all(width: 0.5),
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    onChanged: (value) {
-                      notesProvider.filterNotesByTag(value);
-                    },
+                    child: TextFormField(
+                      controller: _searchController,
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.all(10),
+                        suffixIcon: _searchController.text.isNotEmpty ? IconButton(
+                          icon: Icon(Icons.cancel),
+                          onPressed: (){
+                            _searchController.clear();
+                          },
+                        ) : SizedBox(),
+                        hintText: 'Search by tag',
+                        border: InputBorder.none,
+                      ),
+                      onChanged: (value) {
+                        notesProvider.filterNotesByTag(value);
+                      },
+                    ),
                   ),
                 ),
-                IconButton(
-                  onPressed: () {
-                    setState(() {
-                      _isSearching = false;
-                      _searchController.clear();
-                    });
+                SizedBox(
+                  width: 10,
+                ),
+                if(_searchController.text.isEmpty)
+                GestureDetector(
+                  onTap: (){
+                    _isSearching = false;
                   },
-                  icon: Icon(Icons.cancel),
+                  child: Text(
+                    'Cancel',
+                    style: TextStyle(
+                      fontSize: 16,
+                    ),
+                  ),
                 ),
               ],
             ),
           ),
-          backgroundColor: Color.fromRGBO(252, 208, 75, 1),
         )
             : AppBar(
           toolbarHeight: 70,
           automaticallyImplyLeading: false,
           title: Row(
             children: [
-              Text('All Notes'),
+              Text('Notes'),
               Spacer(),
               IconButton(
                 onPressed: () {
@@ -100,7 +121,6 @@ class _HomePageState extends State<HomePage> {
               ),
             ],
           ),
-          backgroundColor: Color.fromRGBO(252, 208, 75, 1),
         ),
         body: Padding(
           padding: EdgeInsets.only(top: 15),
@@ -189,14 +209,18 @@ class _HomePageState extends State<HomePage> {
                             crossAxisCount: 2,
                             mainAxisSpacing: 10.0,
                             crossAxisSpacing: 10.0,
-                            childAspectRatio: 1.0,
+                            childAspectRatio: 0.8,
                           ),
                           itemBuilder: (context, index) {
                             DocumentSnapshot document = noteList[index];
                             String noteText = document['title'];
                             String description = document['description'];
                             List<dynamic> tags = document['tags'];
+                            Timestamp timestamp = document['timeStamp'];
+                            DateTime dateTime = timestamp.toDate();
+                            String formattedDate = DateFormat('yyyy-MM-dd').format(dateTime);
                             return Card(
+                              color: Colors.limeAccent.withOpacity(0.5),
                               child: ListTile(
                                 title: Text(noteText),
                                 subtitle: Column(
@@ -207,23 +231,30 @@ class _HomePageState extends State<HomePage> {
                                       overflow: TextOverflow.ellipsis,
                                       maxLines: 4,
                                     ),
-                                    SizedBox(height: 4), // Add some vertical spacing between subtitle and additional text
-                                    Wrap(
-                                      spacing: 8, // Adjust spacing between containers
-                                      runSpacing: 4, // Adjust spacing between rows of containers
-                                      children: tags.map((tag) {
-                                        return Container(
-                                          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                          decoration: BoxDecoration(
-                                            color: Colors.blue,
-                                            borderRadius: BorderRadius.circular(8),
-                                          ),
-                                          child: Text(
-                                            '# $tag',
-                                            style: TextStyle(color: Colors.white),
-                                          ),
-                                        );
-                                      }).toList(),
+                                   // SizedBox(height: 30),
+                                    // Add some vertical spacing between subtitle and additional text
+                                    SingleChildScrollView(
+                                      scrollDirection: Axis.horizontal,
+                                      child: Wrap(
+                                        spacing: 6, // Adjust spacing between containers
+                                        runSpacing: 6, // Adjust spacing between rows of containers
+                                        children: tags.map((tag) {
+                                          return Container(
+                                            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                            decoration: BoxDecoration(
+                                              color: Colors.white70,
+                                              borderRadius: BorderRadius.circular(10),
+                                            ),
+                                            child: Text(
+                                              '# $tag',
+                                              style: TextStyle(color: Colors.blue),
+                                            ),
+                                          );
+                                        }).toList(),
+                                      ),
+                                    ),
+                                    Text(
+                                        formattedDate,
                                     ),
                                   ],
                                 ),
