@@ -38,7 +38,7 @@ class _HomePageState extends State<HomePage> {
            toolbarHeight: 70,
           automaticallyImplyLeading: false,
           title: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 0.0),
             child: Row(
               children: [
                 Expanded(
@@ -52,6 +52,7 @@ class _HomePageState extends State<HomePage> {
                       controller: _searchController,
                       decoration: InputDecoration(
                         contentPadding: EdgeInsets.all(10),
+                        prefixIcon: Icon(Icons.search),
                         suffixIcon: _searchController.text.isNotEmpty ? IconButton(
                           icon: Icon(Icons.cancel),
                           onPressed: (){
@@ -123,53 +124,60 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         body: Padding(
-          padding: EdgeInsets.only(top: 15),
+          padding: EdgeInsets.only(left: 8,right: 8),
           child: Column(
             children: [
-              Container(
-                width: 200,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: Color.fromRGBO(246, 245, 245, 1),
-                ),
-                child: PopupMenuButton(
-                  color: Color.fromRGBO(246, 245, 245, 1),
-                  offset: Offset(0, 40),
-                  onSelected: (value) {
-                    if (value == 0) {
-                      // Handle the "All" category selection
-                      notesProvider.setNewCategories = 'All'; // Reset the category filter
-                    } else {
-                      notesProvider.setNewCategories = notesProvider.categoriesList?[value - 1] ?? '';
-                    }
-                    // Handle selection with the single value
-                    print('Selected: $value');
-                  },
-                  itemBuilder: (context) {
-                    // Generate a list of PopupMenuItem widgets using List.generate
-                    List<PopupMenuItem> items = [
-                      PopupMenuItem(
-                        value: 0, // Value for "All" category
-                        child: Text('All'), // Text for "All" category
-                      ),
-                    ];
-                    items.addAll(List.generate(
-                      notesProvider.categoriesList?.length ?? 0,
-                          (index) => PopupMenuItem(
-                        value: index + 1, // Adjust the value if needed
-                        child: Text(notesProvider.categoriesList?[index] ?? ''), // Adjust the label as needed
-                      ),
-                    ));
-                    return items;
-                  },
-                  child: Row(
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Padding(
+                  padding: EdgeInsets.only(left: 6),
+                  child: Wrap(
+                    spacing: 8, // Adjust spacing between containers
+                    runSpacing: 8, // Adjust spacing between rows of containers
                     children: [
-                      Padding(
-                          padding : EdgeInsets.only(left: 10),
-                          child: Text(notesProvider.selectedCategories ?? 'Select the Categories')),
-                      Spacer(),
-                      Icon(Icons.arrow_drop_down_outlined)
-                    ],
+                  // Add the "All" category container
+                  GestureDetector(
+                    onTap: (){
+                      notesProvider.setNewCategories = 'All';
+                    },
+                    child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: notesProvider.selectedCategories == 'All'
+                    ? Colors.blue // Change color when selected
+                            : Color.fromRGBO(246, 245, 245, 1),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      'All',
+                      style: TextStyle(color: notesProvider.selectedCategories == 'All' ?
+                      Colors.white :Colors.black.withOpacity(0.6)),
+                    ),
+                                  ),
+                  ),
+                                // Map through the categories list
+                                ...notesProvider.categoriesList!.map((category) {
+                  return GestureDetector(
+                    onTap: (){
+                      notesProvider.setNewCategories = category;
+                    },
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: category == notesProvider.selectedCategories
+                            ? Colors.blue // Change color when selected
+                            : Color.fromRGBO(246, 245, 245, 1),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        category,
+                        style: TextStyle(color: category == notesProvider.selectedCategories ?
+                        Colors.white : Colors.black.withOpacity(0.6)),
+                      ),
+                    ),
+                  );
+                                }).toList(),
+                              ],
                   ),
                 ),
               ),
@@ -207,8 +215,8 @@ class _HomePageState extends State<HomePage> {
                           itemCount: noteList.length,
                           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 2,
-                            mainAxisSpacing: 10.0,
-                            crossAxisSpacing: 10.0,
+                            mainAxisSpacing: 1.0,
+                            crossAxisSpacing: 1.0,
                             childAspectRatio: 0.8,
                           ),
                           itemBuilder: (context, index) {
@@ -220,18 +228,22 @@ class _HomePageState extends State<HomePage> {
                             DateTime dateTime = timestamp.toDate();
                             String formattedDate = DateFormat('yyyy-MM-dd').format(dateTime);
                             return Card(
-                              color: Colors.limeAccent.withOpacity(0.5),
+                              semanticContainer: true,
+                              clipBehavior: Clip.antiAliasWithSaveLayer,
+                              color:Color.fromRGBO(254, 227, 148,1),
                               child: ListTile(
                                 title: Text(noteText),
                                 subtitle: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                 crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       description,
                                       overflow: TextOverflow.ellipsis,
                                       maxLines: 4,
                                     ),
-                                   // SizedBox(height: 30),
+                                    SizedBox(
+                                      height: 80,
+                                    ),
                                     // Add some vertical spacing between subtitle and additional text
                                     SingleChildScrollView(
                                       scrollDirection: Axis.horizontal,
@@ -242,7 +254,7 @@ class _HomePageState extends State<HomePage> {
                                           return Container(
                                             padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                             decoration: BoxDecoration(
-                                              color: Colors.white70,
+                                              color: Colors.blue.withOpacity(0.1),
                                               borderRadius: BorderRadius.circular(10),
                                             ),
                                             child: Text(
@@ -253,6 +265,9 @@ class _HomePageState extends State<HomePage> {
                                         }).toList(),
                                       ),
                                     ),
+                                    SizedBox(
+                                      height: 20,
+                                    ),
                                     Text(
                                         formattedDate,
                                     ),
@@ -261,7 +276,7 @@ class _HomePageState extends State<HomePage> {
                               ),
                             );
                           },
-                          padding: EdgeInsets.only(left: 15, right: 15),
+                          padding: EdgeInsets.only(left: 0, right: 0),
                         ),
                       );
                     } else {
@@ -279,7 +294,8 @@ class _HomePageState extends State<HomePage> {
         floatingActionButton: FloatingActionButton(
           // isExtended: true,
           child: Icon(Icons.add),
-          backgroundColor: Color.fromRGBO(252, 208, 75, 1),
+          backgroundColor: Color.fromRGBO(10,150,248,1),
+          foregroundColor: Colors.white,
           onPressed: () {
             Navigator.pushNamed(context, '/notesScreen');
           },
