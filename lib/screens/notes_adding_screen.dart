@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../firebase_cloud_storage/cloud_service.dart';
@@ -13,7 +14,16 @@ import '../utilities /reusable_textfield.dart';
 import '../viewModel/notes_app_viewModel.dart';
 
 class NotesAddingScreen extends StatefulWidget {
-  const NotesAddingScreen({super.key});
+  final String? noteText;
+  final String? description;
+  final List<dynamic>? tags;
+
+   NotesAddingScreen(
+        this.noteText,
+        this.description,
+        this.tags,
+        {super.key}
+       );
 
   @override
   State<NotesAddingScreen> createState() => _NotesAddingScreenState();
@@ -53,221 +63,283 @@ class _NotesAddingScreenState extends State<NotesAddingScreen> {
     super.dispose();
   }
 
+  void _initialize() {
+    _titleController.text = widget.noteText ?? _titleController.text;
+    _descriptionController.text = widget.description ?? _descriptionController.text;
+    final notesProvider = Provider.of<NoteProvider>(context, listen: false);
+    notesProvider.fetchNotes(auth.currentUser?.uid);
+    notesProvider.addSelectedTags(widget.tags ?? []);
+  }
 
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initialize();
+    });
+    super.initState();
+  }
+
+  @override
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    final notesProvider = Provider.of<NoteProvider>(context,listen: true);
+    // _titleController.text = widget.noteText ?? _titleController.text;
+    // _descriptionController.text = widget.description ?? _descriptionController.text;
+    final notesProvider = Provider.of<NoteProvider>(context, listen: true);
     notesProvider.fetchNotes(auth.currentUser?.uid);
     List<DocumentSnapshot> noteList = notesProvider.noteList;
+
+    DateTime dateTime =  Timestamp.now().toDate();
+    String formattedDate = DateFormat('yyyy-MM-dd').format(dateTime);
+
+    // _descriptionController.text = widget.description ?? '';
+
+
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         leading: IconButton(
-                icon: Icon(Icons.arrow_back_ios),
-                onPressed: (){
-                  notesProvider.clearSelectedTags();
-                  Navigator.pop(context);
-                }
-            ),
-          backgroundColor: Color.fromRGBO(252, 208, 75, 1),
-          actions: [
-            GestureDetector(
-              onTap: () {
-                showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    title: Text('Add Tag'),
-                    content: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        TextField(
-                          controller: _tagsController,
-                          onChanged: (value) {},
-                          decoration: InputDecoration(
-                            hintText: 'Enter tag name',
-                          ),
+          icon: Icon(Icons.arrow_back_ios),
+          onPressed: () {
+            notesProvider.clearSelectedTags();
+            Navigator.pop(context);
+          },
+        ),
+        backgroundColor: Colors.white,
+        actions: [
+          GestureDetector(
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: Text('Add Tag'),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextField(
+                        controller: _tagsController,
+                        decoration: InputDecoration(
+                          hintText: 'Enter tag name',
                         ),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        Wrap(
-                          children: [
-                            for (var tag in notesProvider.tags)...[
-                              GestureDetector(
-                                onTap: () {
-                                  notesProvider.addSelectedTags(tag);
-                                  Navigator.pop(context);
-                                },
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                  margin: EdgeInsets.all(4),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10),
-                                    color:  Colors.white70,
-                                  ),
-                                  child: Text(tag),
-                                ),
-                              ),
-                            ]
-                          ],
-                        ),
-                      ],
-                    ),
-                    actions: [
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                          _tagsController.clear();
-                        },
-                        child: Text('Cancel'),
                       ),
-                      ElevatedButton(
-                        child: Text('Add'),
-                        onPressed: () {
-                          Navigator.pop(context);
-                           notesProvider.addTags([_tagsController.text]);
-                           notesProvider.addSelectedTags(_tagsController.text);
-                          _tagsController.clear();
-                        },
-                        // onPressed: () {
-                        //
-                        //   Navigator.pop(context);
-                        //    notesProvider.addTag(_tagsController.text);
-                        //   _tagsController.clear();
-                        // },
+                      SizedBox(height: 20),
+                      Wrap(
+                        children: [
+                          for (var tag in notesProvider.tags)...[
+                            GestureDetector(
+                              onTap: () {
+                                notesProvider.addSelectedTags([tag]);
+                                Navigator.pop(context);
+                              },
+                              child: Container(
+                                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                margin: EdgeInsets.all(4),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: Colors.white70,
+                                ),
+                                child: Text(tag),
+                              ),
+                            ),
+                          ]
+                        ],
                       ),
                     ],
                   ),
-                );
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Icon(Icons.bookmark),
-              ),
+                  actions: [
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        _tagsController.clear();
+                      },
+                      child: Text('Cancel'),
+                    ),
+                    ElevatedButton(
+                      child: Text('Add'),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        notesProvider.addTags([_tagsController.text]);
+                        notesProvider.addSelectedTags([_tagsController.text]);
+                        _tagsController.clear();
+                      },
+                    ),
+                  ],
+                ),
+              );
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Icon(Icons.bookmark),
             ),
+          ),
         ],
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Icon(Icons.bookmark),
-          ]
-        ),
+        title: Text(''),
       ),
       body: Padding(
-        padding: EdgeInsets.only(left: 15, right: 15),
+        padding: EdgeInsets.all(15),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
-                height: 10,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(left: 10),
+                    child: Text(formattedDate),
+                  ),
+                  IntrinsicWidth(
+                    child: PopupMenuButton(
+                      color: Color.fromRGBO(246, 245, 245, 1),
+                      offset: Offset(0, 40),
+                      onSelected: (value) {
+                        notesProvider.setNewCategories = notesProvider.categoriesList?[value - 1] ?? '';
+                      },
+                      itemBuilder: (context) {
+                        return List.generate(
+                          notesProvider.categoriesList?.length ?? 0,
+                              (index) => PopupMenuItem(
+                            value: index + 1,
+                            child: Text(notesProvider.categoriesList?[index] ?? ''),
+                          ),
+                        );
+                      },
+                      child: Row(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(left: 10),
+                            child: Text(notesProvider.selectedCategories ?? 'Select the Categories'),
+                          ),
+                          Spacer(),
+                          Icon(Icons.arrow_drop_down_outlined)
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              FormContainerWidget(
-                controller: _titleController,
-                labelText: 'Title',
-                hintText: 'Enter title',
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              FormContainerWidget(
-                controller: _descriptionController,
-                labelText: 'Description',
-                hintText: 'Notes',
-                maxLines: 10,
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Text('Categories'),
-              SizedBox(
-                height: 5,
-              ),
-              Container(
-                width: size.width * 1,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: Color.fromRGBO(246, 245, 245, 1),
-                ),
-                child: PopupMenuButton(
-                  color: Color.fromRGBO(246, 245, 245, 1),
-                  offset: Offset(0, 40),
-                  onSelected: (value) {
-                    notesProvider.setNewCategories = notesProvider.categoriesList?[value - 1] ?? '';
-                    // Handle selection with the single value
-                    print('Selected: $value');
-                  },
-                  itemBuilder: (context) {
-                    // Generate a list of PopupMenuItem widgets using List.generate
-                    return List.generate(
-                         notesProvider.categoriesList?.length ?? 0, // Number of items you want in the popup menu
-                          (index) => PopupMenuItem(
-                           value: index + 1, // Adjust the value if needed
-                           child: Text(notesProvider.categoriesList?[index] ?? ''), // Adjust the label as needed
+              Padding(
+                padding: EdgeInsets.only(left: 10),
+                child: Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: notesProvider.tagsSelected.map((tagName) {
+                    return Container(
+                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Colors.blue,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            '# ${tagName}',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          SizedBox(width: 4,),
+                          GestureDetector(
+                            onTap: () {
+                              notesProvider.removeSelectedTag(tagName); // Define this method to remove the tag
+                            },
+                            child: Icon(
+                              Icons.cancel,
+                              color: Colors.white,
+                              size: 16,
+                            ),
+                          ),
+                          // IconButton(
+                          //     iconSize: 15,
+                          //     onPressed: (){},
+                          //     icon: Icon(Icons.cancel),
+                          // )
+                        ],
                       ),
                     );
-                  },
-
-                  child: Row(
-                    children: [
-                      Padding(
-                          padding : EdgeInsets.only(left: 10),
-                          child: Text(notesProvider.selectedCategories ?? 'Select the Categories')),
-                      Spacer(),
-                      Icon(Icons.arrow_drop_down_outlined)
-                    ],
-                  ),
+                  }).toList(),
                 ),
               ),
-              SizedBox(
-                height: 10,
-              ),
-              Wrap(
-                spacing: 8, // Adjust spacing between containers
-                runSpacing: 8, // Adjust spacing between rows of containers
-                children: notesProvider.tagsSelected.map((tagName) {
-                  return Container(
-                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: Colors.blue, // Set background color of container
-                      borderRadius: BorderRadius.circular(8), // Optional: Add border radius for rounded corners
+              Row(
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: TextField(
+                      controller: _titleController,
+                      decoration: InputDecoration(
+                        hintText: 'Title',
+                        border: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+                        filled: false,
+                        hintStyle: TextStyle(
+                          fontSize: 25,
+                          color: Colors.black.withOpacity(0.5),
+                        )
+                      ),
                     ),
-                    child: Text(
-                      '# ${tagName}',
-                      style: TextStyle(color: Colors.white), // Set text color
-                    ),
-                  );
-                }).toList(),
+                  ),
+                ],
               ),
-              // TypeAheadField(
-              //   itemBuilder: (BuildContext context, value) {  },
-              //   onSelected: (Object? value) {  },
-              //   suggestionsCallback: (String search) {  },
-              // ),
+              SizedBox(height: 10),
+              TextFormField(
+                controller: _descriptionController,
+                maxLines: 20,
+                decoration: InputDecoration(
+                  hintText: 'Notes here',
+                  border: InputBorder.none,
+                    enabledBorder: InputBorder.none, // Removes the border when the field is enabled (not focused)
+                    disabledBorder: InputBorder.none, // Removes the border when the field is disabled
+                    focusedBorder: InputBorder.none,
+                    contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+                  filled: false,
+                  fillColor: Colors.white,
+                    hintStyle: TextStyle(
+                      fontSize: 18,
+                      color: Colors.black.withOpacity(0.5),
+                    )
+                ),
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                  onPressed: (){
+                    fireStoreService.updateNotes(
+                      _titleController.text,
+                      _descriptionController.text,
+                      user.uid,
+                      notesProvider.selectedCategories ?? '',
+                      notesProvider.tagsSelected,
+                    );
+                    Navigator.pop(context);
+                  },
+                  child: Text('Update'),
+              ),
+              SizedBox(height: 5),
             ],
           ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
-           child: Icon(Icons.save_sharp),
-           backgroundColor: Color.fromRGBO(252, 208, 75, 1),
-           onPressed: () {
-             String tagsString = _tagsController.text.trim(); // Remove leading/trailing whitespace
-             List<String> tags = tagsString.split(',');
-               fireStoreService.addNotes(
-                   _titleController.text,
-                   _descriptionController.text,
-                    user.uid,
-                    notesProvider.selectedCategories ?? '',
-                    notesProvider.tagsSelected,
-               );
-               _titleController.clear();
-               _descriptionController.clear();
-               _tagsController.clear();
-                notesProvider.clearSelectedTags();
-                Navigator.pop(context);
-             },
-          ),
-      );
+        child: Icon(Icons.save_sharp),
+        elevation: 0,
+        foregroundColor: Colors.white,
+        backgroundColor: Colors.blue,
+        onPressed: () {
+          String tagsString = _tagsController.text.trim();
+          List<String> tags = tagsString.split(',');
+          fireStoreService.addNotes(
+            _titleController.text,
+            _descriptionController.text,
+            user.uid,
+            notesProvider.selectedCategories ?? '',
+            notesProvider.tagsSelected,
+          );
+          _titleController.clear();
+          _descriptionController.clear();
+          _tagsController.clear();
+          notesProvider.clearSelectedTags();
+          Navigator.pop(context);
+        },
+      ),
+    );
   }
 }

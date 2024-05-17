@@ -78,13 +78,12 @@ class NoteProvider extends ChangeNotifier {
 
   List<String> get tagsSelected => _tagsSelected;
 
-  void addSelectedTags(String tagName) {
-    if (!_tagsSelected.contains(tagName)) {
-      _tagsSelected.add(tagName);
-      print('tagsSelected : ${_tagsSelected}');
-      notifyListeners();
-    } else {
-      print('Tag $tagName already exists in _tagsSelected.');
+  void addSelectedTags(List<dynamic> tags) {
+    for (var tag in tags) {
+      String tagName = tag.toString(); // Convert dynamic to string
+      if (!_tagsSelected.contains(tagName)) {
+        _tagsSelected.add(tagName);
+      }
     }
     notifyListeners();
   }
@@ -100,6 +99,11 @@ class NoteProvider extends ChangeNotifier {
       }
     }
     //print('the saved tags : ${_tags}');
+  }
+
+  void removeSelectedTag(String tag) {
+    tagsSelected.remove(tag);
+    notifyListeners();
   }
 
 

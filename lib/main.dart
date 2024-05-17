@@ -34,14 +34,55 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
         ),
         home: LoginScreen(),
-        routes: {
-          '/signup': (context) => SignUpScreen(),
-          '/home' : (context) => HomePage(),
-          '/login' : (context) => LoginScreen(),
-          '/notesScreen' : (context) => NotesAddingScreen(),
+        onGenerateRoute: (settings) {
+          switch (settings.name) {
+            case '/signup':
+              return MaterialPageRoute(builder: (context) => SignUpScreen());
+            case '/home':
+              return MaterialPageRoute(builder: (context) => HomePage());
+            case '/login':
+              return MaterialPageRoute(builder: (context) => LoginScreen());
+            case '/notesScreen':
+              final args = settings.arguments as NotesArguments?;
+              return MaterialPageRoute(
+                builder: (context) => NotesAddingScreen(
+                  args?.noteText,
+                  args?.description,
+                  args?.tags,
+                ),
+              );
+              default:
+              return _errorRoute();
+          }
         },
+        initialRoute: '/login',
         debugShowCheckedModeBanner: false,
       ),
     );
+
   }
 }
+
+Route _errorRoute() {
+  return MaterialPageRoute(builder: (context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Error'),
+      ),
+      body: Center(
+        child: Text('Page not found!'),
+      ),
+    );
+  });
+}
+
+class NotesArguments {
+  final String? noteText;
+  final String? description;
+  final List<String>? tags;
+
+  NotesArguments(this.noteText, this.description, this.tags);
+}
+
+// Example widget classes (SignUpScreen, HomePage, LoginScreen, NotesAddingScreen)
+// should be defined below or in separate files.

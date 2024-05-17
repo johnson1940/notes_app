@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import '../firebase_cloud_storage/cloud_service.dart';
 import '../utilities /reusable_elevated_button.dart';
 import '../viewModel/notes_app_viewModel.dart';
+import 'notes_adding_screen.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -227,51 +228,65 @@ class _HomePageState extends State<HomePage> {
                             Timestamp timestamp = document['timeStamp'];
                             DateTime dateTime = timestamp.toDate();
                             String formattedDate = DateFormat('yyyy-MM-dd').format(dateTime);
-                            return Card(
-                              semanticContainer: true,
-                              clipBehavior: Clip.antiAliasWithSaveLayer,
-                              color:Color.fromRGBO(254, 227, 148,1),
-                              child: ListTile(
-                                title: Text(noteText),
-                                subtitle: Column(
-                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      description,
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 4,
+                            return GestureDetector(
+                              onTap: (){
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => NotesAddingScreen(
+                                       noteText,
+                                       description,
+                                       tags,
                                     ),
-                                    SizedBox(
-                                      height: 80,
-                                    ),
-                                    // Add some vertical spacing between subtitle and additional text
-                                    SingleChildScrollView(
-                                      scrollDirection: Axis.horizontal,
-                                      child: Wrap(
-                                        spacing: 6, // Adjust spacing between containers
-                                        runSpacing: 6, // Adjust spacing between rows of containers
-                                        children: tags.map((tag) {
-                                          return Container(
-                                            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                            decoration: BoxDecoration(
-                                              color: Colors.blue.withOpacity(0.1),
-                                              borderRadius: BorderRadius.circular(10),
-                                            ),
-                                            child: Text(
-                                              '# $tag',
-                                              style: TextStyle(color: Colors.blue),
-                                            ),
-                                          );
-                                        }).toList(),
+                                  ),
+                                );
+                              },
+                              child: Card(
+                                semanticContainer: true,
+                                clipBehavior: Clip.antiAliasWithSaveLayer,
+                                color: Color.fromRGBO(254, 227, 148,1),
+                                child: ListTile(
+                                  title: Text(noteText),
+                                  subtitle: Column(
+                                   crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        description,
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 4,
                                       ),
-                                    ),
-                                    SizedBox(
-                                      height: 20,
-                                    ),
-                                    Text(
-                                        formattedDate,
-                                    ),
-                                  ],
+                                      SizedBox(
+                                        height: 80,
+                                      ),
+                                      // Add some vertical spacing between subtitle and additional text
+                                      SingleChildScrollView(
+                                        scrollDirection: Axis.horizontal,
+                                        child: Wrap(
+                                          spacing: 6, // Adjust spacing between containers
+                                          runSpacing: 6, // Adjust spacing between rows of containers
+                                          children: tags.map((tag) {
+                                            return Container(
+                                              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                              decoration: BoxDecoration(
+                                                color: Colors.blue.withOpacity(0.1),
+                                                borderRadius: BorderRadius.circular(10),
+                                              ),
+                                              child: Text(
+                                                '# $tag',
+                                                style: TextStyle(color: Colors.blue),
+                                              ),
+                                            );
+                                          }).toList(),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        height: 20,
+                                      ),
+                                      Text(
+                                          formattedDate,
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             );
