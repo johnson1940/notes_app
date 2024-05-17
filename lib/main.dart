@@ -49,6 +49,7 @@ class MyApp extends StatelessWidget {
                   args?.noteText,
                   args?.description,
                   args?.tags,
+                  args?.documentId,
                 ),
               );
               default:
@@ -80,8 +81,10 @@ class NotesArguments {
   final String? noteText;
   final String? description;
   final List<String>? tags;
+  final String? documentId;
 
-  NotesArguments(this.noteText, this.description, this.tags);
+
+  NotesArguments(this.noteText, this.description, this.tags, this.documentId);
 }
 
 // Example widget classes (SignUpScreen, HomePage, LoginScreen, NotesAddingScreen)

@@ -224,6 +224,7 @@ class _HomePageState extends State<HomePage> {
                             DocumentSnapshot document = noteList[index];
                             String noteText = document['title'];
                             String description = document['description'];
+                            String id = document.id;
                             List<dynamic> tags = document['tags'];
                             Timestamp timestamp = document['timeStamp'];
                             DateTime dateTime = timestamp.toDate();
@@ -237,6 +238,7 @@ class _HomePageState extends State<HomePage> {
                                        noteText,
                                        description,
                                        tags,
+                                       id,
                                     ),
                                   ),
                                 );

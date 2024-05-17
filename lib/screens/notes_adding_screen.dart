@@ -17,11 +17,13 @@ class NotesAddingScreen extends StatefulWidget {
   final String? noteText;
   final String? description;
   final List<dynamic>? tags;
+  final String? documentId;
 
    NotesAddingScreen(
         this.noteText,
         this.description,
         this.tags,
+        this.documentId,
         {super.key}
        );
 
@@ -50,6 +52,7 @@ class _NotesAddingScreenState extends State<NotesAddingScreen> {
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _categoriesController = TextEditingController();
   final TextEditingController _tagsController = TextEditingController();
+  late  String? documentId = '';
 
   bool isSigningUp = false;
 
@@ -66,6 +69,7 @@ class _NotesAddingScreenState extends State<NotesAddingScreen> {
   void _initialize() {
     _titleController.text = widget.noteText ?? _titleController.text;
     _descriptionController.text = widget.description ?? _descriptionController.text;
+    documentId = widget.documentId;
     final notesProvider = Provider.of<NoteProvider>(context, listen: false);
     notesProvider.fetchNotes(auth.currentUser?.uid);
     notesProvider.addSelectedTags(widget.tags ?? []);
@@ -303,6 +307,7 @@ class _NotesAddingScreenState extends State<NotesAddingScreen> {
               ElevatedButton(
                   onPressed: (){
                     fireStoreService.updateNotes(
+                       documentId ?? '',
                       _titleController.text,
                       _descriptionController.text,
                       user.uid,

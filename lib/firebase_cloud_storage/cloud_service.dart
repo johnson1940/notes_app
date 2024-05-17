@@ -4,15 +4,15 @@ class FireStoreService {
   final CollectionReference notes = FirebaseFirestore.instance.collection('notes');
 
 
-  Future<String> addNotes(
+  Future<void> addNotes(
       String title,
       String description,
       String userId,
       String categories,
       List<String> tags,
       {String? timeStamp}
-      ) async {
-    DocumentReference docRef = await notes.add({
+      ) {
+    return notes.add({
       'title': title,
       'description' : description,
       'userId' : userId,
@@ -20,17 +20,16 @@ class FireStoreService {
       'tags' : tags,
       'timeStamp' : Timestamp.now(),
     });
-    print('doc Id : ${docRef.id}');
-    return docRef.id; // Return the document ID
   }
 
-  Future<void> updateNotes(// Add this parameter for document ID
+  Future<void> updateNotes(
+      String docId,// Add this parameter for document ID
       String title,
       String description,
       String userId,
       String categories,
       List<String> tags,
-      {String? timeStamp, String? docId}
+      {String? timeStamp}
       ) async {
     await notes.doc(docId).update({
       'title': title,
@@ -43,37 +42,6 @@ class FireStoreService {
     print('Document with ID $docId updated successfully');
   }
 
-  Future<void> addOrUpdateNotes(
-      String title,
-      String description,
-      String userId,
-      String categories,
-      List<String> tags,
-      {String? documentId} // Optional document ID for update
-      ) async {
-    CollectionReference notes = FirebaseFirestore.instance.collection('notes');
-    if (documentId != null) {
-      // Update existing document
-      await notes.doc(documentId).update({
-        'title': title,
-        'description': description,
-        'userId': userId,
-        'categories': categories,
-        'tags': tags,
-        'timeStamp': Timestamp.now(), // Update timestamp if needed
-      });
-    } else {
-      // Add new document
-      await notes.add({
-        'title': title,
-        'description': description,
-        'userId': userId,
-        'categories': categories,
-        'tags': tags,
-        'timeStamp': Timestamp.now(),
-      });
-    }
-  }
 
   // Read the data
 
