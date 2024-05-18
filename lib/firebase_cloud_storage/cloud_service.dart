@@ -48,7 +48,7 @@ class FireStoreService {
       await notes.doc(docId).delete();
       showToast(message: notesDeleterSuccessfully);
     } catch (e) {
-      showToast(message:  '$errorDeletingNotes : $e');
+      showToast(message: '$errorDeletingNotes : $e');
     }
   }
 

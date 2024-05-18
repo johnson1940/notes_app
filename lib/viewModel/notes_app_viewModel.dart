@@ -8,14 +8,14 @@ class NoteProvider extends ChangeNotifier {
 
   void setListOfCategories(List<String> cate){
     _titles.addAll(cate);
-    notifyListeners(); // Assuming notifyListeners is defined somewhere else
+    notifyListeners();
   }
 
   List<String> get categories => _titles;
 
   void addCategory(String category) {
     _titles.add(category);
-    notifyListeners(); // Assuming notifyListeners is defined somewhere else
+    notifyListeners();
   }
 
   List<DocumentSnapshot> noteList = [];
@@ -175,24 +175,4 @@ class NoteProvider extends ChangeNotifier {
     _isForSearch = isSearch;
     notifyListeners();
   }
-
-  // String _selectedCategory = 'All';
-  // List<String> _categoriesList = ['Entertainment', 'Technology'];
-  //
-  // String get selectedCategory => _selectedCategory;
-  //
-  // List<String> get categoriesList2 => _categoriesList;
-  //
-  // set setNewCategory(String category) {
-  //   _selectedCategory = category;
-  //   notifyListeners();
-  // }
-  //
-  // void addCategory2(String category) {
-  //   if (!_categoriesList.contains(category)) {
-  //     _categoriesList.add(category);
-  //     notifyListeners();
-  //   }
-  // }
-
 }

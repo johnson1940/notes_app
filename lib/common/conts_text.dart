@@ -16,6 +16,8 @@ const String signUp = "Signup";
 
 const String userAddedSuccessFul = "User is successfully created";
 
+const String userLoggedInSuccessFull = "User successfully loggedIn ";
+
 const String someErrorHappened =  "Some error happened";
 
 const String notesDeleterSuccessfully = "Note deleted successfully";

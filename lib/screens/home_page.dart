@@ -2,8 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:posthog_flutter/posthog_flutter.dart';
 import 'package:provider/provider.dart';
 import '../common/conts_text.dart';
+import '../connectivity_service.dart';
 import '../firebase_cloud_storage/cloud_service.dart';
 import '../model_class/notes_model.dart';
 import '../viewModel/notes_app_viewModel.dart';
@@ -20,16 +22,21 @@ class _HomePageState extends State<HomePage> {
   final FireStoreService fireStoreService = FireStoreService();
   final FirebaseAuth auth = FirebaseAuth.instance;
   final TextEditingController _searchController = TextEditingController();
+  final ConnectivityService _connectivityService = ConnectivityService();
 
   @override
   void initState() {
-    context.read<NoteProvider>().setNewCategories = 'All';
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<NoteProvider>().setNewCategories = 'All';
+    });
+    _connectivityService.startMonitoring(context);
     super.initState();
   }
 
   @override
   void dispose() {
     _searchController.dispose();
+    _connectivityService.stopMonitoring();
     super.dispose();
   }
 
@@ -105,6 +112,9 @@ class _HomePageState extends State<HomePage> {
                   IconButton(
                     onPressed: () {
                       provider.setIsSearch = true;
+                      Posthog().capture(
+                        eventName: 'Filtering_event',
+                      );
                     },
                     icon: const Icon(Icons.search),
                   ),
@@ -121,6 +131,9 @@ class _HomePageState extends State<HomePage> {
                     onSelected: (value) {
                       if (value == signOut) {
                         FirebaseAuth.instance.signOut();
+                        Posthog().capture(
+                          eventName: 'Sign_out_event',
+                        );
                         notesProvider.setNewCategories = 'All';
                         Navigator.pushReplacementNamed(context, '/login');
                       }
@@ -297,9 +310,11 @@ class _HomePageState extends State<HomePage> {
                             ),
                           );
                         } else {
-                          return const Center(
-                            child: Text(
-                              '$noNotesFound ☹️',
+                          return  Expanded(
+                            child: Center(
+                              child: Image.asset(
+                                'assets/images/empty_notes.png'
+                              ),
                             ),
                           );
                         }
@@ -319,6 +334,9 @@ class _HomePageState extends State<HomePage> {
               foregroundColor: Colors.white,
               onPressed: () {
                 notesProvider.isForNoteUpdate = false;
+                 Posthog().capture(
+                  eventName: 'Notes_adding_screen',
+                );
                 Navigator.pushNamed(context, '/notesScreen');
               },
               child: const Icon(Icons.add),

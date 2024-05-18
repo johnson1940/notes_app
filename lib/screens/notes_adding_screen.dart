@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:notes_app/common/conts_text.dart';
 import 'package:notes_app/common/image_string.dart';
+import 'package:posthog_flutter/posthog_flutter.dart';
 import 'package:provider/provider.dart';
 import '../connectivity_service.dart';
 import '../firebase_cloud_storage/cloud_service.dart';
@@ -38,13 +39,25 @@ class _NotesAddingScreenState extends State<NotesAddingScreen> {
   late  String? documentId = '';
   final ConnectivityService _connectivityService = ConnectivityService();
 
-  bool isSigningUp = false;
+
+  @override
+  void initState() {
+    _initialize();
+    _connectivityService.startMonitoring(context);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final notesProvider = Provider.of<NoteProvider>(context, listen: false);
+      notesProvider.fetchNotes(auth.currentUser?.uid);
+      notesProvider.addSelectedTags(widget.tags ?? []);
+    });
+    super.initState();
+  }
 
   @override
   void dispose() {
     _titleController.dispose();
     _descriptionController.dispose();
     _tagsController.dispose();
+    _connectivityService.stopMonitoring();
     super.dispose();
   }
 
@@ -52,20 +65,9 @@ class _NotesAddingScreenState extends State<NotesAddingScreen> {
     _titleController.text = widget.noteText ?? _titleController.text;
     _descriptionController.text = widget.description ?? _descriptionController.text;
     documentId = widget.documentId;
-    final notesProvider = Provider.of<NoteProvider>(context, listen: false);
-    notesProvider.fetchNotes(auth.currentUser?.uid);
-    notesProvider.addSelectedTags(widget.tags ?? []);
   }
 
-  @override
-  void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _initialize();
-    });
-    super.initState();
-  }
 
-  @override
   @override
   Widget build(BuildContext context) {
     final notesProvider = Provider.of<NoteProvider>(context, listen: true);
@@ -191,6 +193,9 @@ class _NotesAddingScreenState extends State<NotesAddingScreen> {
                               onPressed: () {
                                 Navigator.pop(context);
                                 fireStoreService.deleteNote(documentId ?? '');
+                                Posthog().capture(
+                                  eventName: 'Delete_event',
+                                );
                                 Navigator.pop(context);
                               },
                               child: const Text(yes),
@@ -369,6 +374,9 @@ class _NotesAddingScreenState extends State<NotesAddingScreen> {
             user.uid,
             notesProvider.selectedCategories ?? '',
             notesProvider.tagsSelected,
+          );
+          Posthog().capture(
+            eventName: 'Notes_adding_event',
           );
           _titleController.clear();
           _descriptionController.clear();
