@@ -121,7 +121,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
        userProperties: {"email": email},
      );
      await Posthog().capture(
-       eventName: 'user_signed_up',
+       eventName: signUpEvent,
      );
       Navigator.pushNamed(context, "/home");
     } else {

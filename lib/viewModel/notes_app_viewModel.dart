@@ -1,29 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../common/conts_text.dart';
 import '../model_class/notes_model.dart';
 
 class NoteProvider extends ChangeNotifier {
   final List<String> _titles = [];
 
+  /// getting the categories from the api
   void setListOfCategories(List<String> cate){
     _titles.addAll(cate);
     notifyListeners();
   }
-
-  List<String> get categories => _titles;
-
-  void addCategory(String category) {
-    _titles.add(category);
-    notifyListeners();
-  }
-
   List<DocumentSnapshot> noteList = [];
 
   List<Note> _notes = [];
 
   List<Note> get notes => _notes;
 
+  /// setting the notes response
   void setNotes(List<Note> notes) {
     _notes = notes;
     notifyListeners();
@@ -31,6 +26,7 @@ class NoteProvider extends ChangeNotifier {
 
   bool? _isForUpdate;
 
+  /// setting boolean for the update
   set isForNoteUpdate(bool isForUpdate){
     _isForUpdate = isForUpdate;
     notifyListeners();
@@ -40,6 +36,7 @@ class NoteProvider extends ChangeNotifier {
 
   bool _isNotedDeleted = false;
 
+  /// setting boolean for the delete option
   set setIsNotesDeleted(bool isNotedDeleted) {
     _isNotedDeleted = isNotedDeleted;
     notifyListeners();
@@ -47,6 +44,7 @@ class NoteProvider extends ChangeNotifier {
 
   bool get isNotedDeleted => _isNotedDeleted;
 
+  /// fetching notes according the userID
   Future<void> fetchNotes(String? currentUserUid) async {
     try {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
@@ -71,9 +69,10 @@ class NoteProvider extends ChangeNotifier {
     }
   }
 
+  /// filtering notes according to categories
   List<Note> filterNotes(List<Note> notes, String selectedCategory, String searchText) {
     if (selectedCategory.isNotEmpty &&
-        selectedCategory != 'All') {
+        selectedCategory != all) {
       notes = notes.where((note) => note.categories == selectedCategory).toList();
     }
 
@@ -86,6 +85,7 @@ class NoteProvider extends ChangeNotifier {
     return notes;
   }
 
+  /// setting categories
   String _addCategories = 'Uncategorized';
 
   set setNewCategories(String categories){
@@ -115,6 +115,7 @@ class NoteProvider extends ChangeNotifier {
 
   List<String> get tagsSelected => _tagsSelected;
 
+  /// adding the selected tags to the list
   void addSelectedTags(List<dynamic> tags) {
     for (var tag in tags) {
       String tagName = tag.toString(); // Convert dynamic to string
@@ -125,10 +126,12 @@ class NoteProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// clearing the selected tags
   void clearSelectedTags() {
     _tagsSelected.clear();
   }
 
+  ///adding tags
   void addTags(List<dynamic> tags) {
     for (var tag in tags) {
       if (!_tags.contains(tag)) {
@@ -137,12 +140,14 @@ class NoteProvider extends ChangeNotifier {
     }
   }
 
+  /// removing tags when clear option pressed
   void removeSelectedTag(String tag) {
     tagsSelected.remove(tag);
     notifyListeners();
   }
 
 
+  /// filtering notes according to the tags
   void filterNotesByTag(String tag) {
     if (tag.isEmpty) {
       _tagsSelected.clear();
@@ -158,6 +163,7 @@ class NoteProvider extends ChangeNotifier {
   }
 
 
+  /// This is for the password obscure Text
   bool _obscureText = true;
 
   bool get obscureText => _obscureText;
@@ -167,6 +173,7 @@ class NoteProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// The boolean for the filter option
   bool _isForSearch = false;
 
   bool get isForSearch => _isForSearch;

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:notes_app/common/colors.dart';
 import 'package:notes_app/common/conts_text.dart';
 import 'package:notes_app/common/image_string.dart';
 import 'package:posthog_flutter/posthog_flutter.dart';
@@ -194,7 +195,7 @@ class _NotesAddingScreenState extends State<NotesAddingScreen> {
                                 Navigator.pop(context);
                                 fireStoreService.deleteNote(documentId ?? '');
                                 Posthog().capture(
-                                  eventName: 'Delete_event',
+                                  eventName: deleteEvent,
                                 );
                                 Navigator.pop(context);
                               },
@@ -256,7 +257,8 @@ class _NotesAddingScreenState extends State<NotesAddingScreen> {
                             child: Text(
                                 notesProvider.selectedCategories == 'All' ?
                                 'Uncategorized' :
-                                (notesProvider.selectedCategories ??  'Uncategorized')),
+                                (notesProvider.selectedCategories ??  'Uncategorized'
+                                )),
                           ),
                           const Spacer(),
                           const Icon(Icons.arrow_drop_down_outlined)
@@ -276,7 +278,7 @@ class _NotesAddingScreenState extends State<NotesAddingScreen> {
                     return Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
-                        color: Colors.blue,
+                        color: appBlue,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
@@ -356,7 +358,7 @@ class _NotesAddingScreenState extends State<NotesAddingScreen> {
         elevation: 0,
         shape: const CircleBorder(),
         foregroundColor: Colors.white,
-        backgroundColor: Colors.blue,
+        backgroundColor: appBlue,
         onPressed: () {
           _connectivityService.startMonitoring(context);
           (notesProvider.isForUpdate ?? false) ?
@@ -376,7 +378,7 @@ class _NotesAddingScreenState extends State<NotesAddingScreen> {
             notesProvider.tagsSelected,
           );
           Posthog().capture(
-            eventName: 'Notes_adding_event',
+            eventName: notesAddingEvent,
           );
           _titleController.clear();
           _descriptionController.clear();

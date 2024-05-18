@@ -2,9 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:notes_app/common/colors.dart';
 import 'package:posthog_flutter/posthog_flutter.dart';
 import 'package:provider/provider.dart';
 import '../common/conts_text.dart';
+import '../common/image_string.dart';
 import '../connectivity_service.dart';
 import '../firebase_cloud_storage/cloud_service.dart';
 import '../model_class/notes_model.dart';
@@ -27,7 +29,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<NoteProvider>().setNewCategories = 'All';
+      context.read<NoteProvider>().setNewCategories = all;
     });
     _connectivityService.startMonitoring(context);
     super.initState();
@@ -43,7 +45,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final notesProvider = Provider.of<NoteProvider>(context);
     return SafeArea(
       child: Consumer<NoteProvider>(
         builder: (BuildContext context, NoteProvider provider, Widget? child) {
@@ -78,7 +79,7 @@ class _HomePageState extends State<HomePage> {
                             border: InputBorder.none,
                           ),
                           onChanged: (value) {
-                            notesProvider.filterNotesByTag(value);
+                            provider.filterNotesByTag(value);
                           },
                         ),
                       ),
@@ -113,7 +114,7 @@ class _HomePageState extends State<HomePage> {
                     onPressed: () {
                       provider.setIsSearch = true;
                       Posthog().capture(
-                        eventName: 'Filtering_event',
+                        eventName: filteringEvent,
                       );
                     },
                     icon: const Icon(Icons.search),
@@ -132,9 +133,9 @@ class _HomePageState extends State<HomePage> {
                       if (value == signOut) {
                         FirebaseAuth.instance.signOut();
                         Posthog().capture(
-                          eventName: 'Sign_out_event',
+                          eventName: signOutEvent,
                         );
-                        notesProvider.setNewCategories = 'All';
+                        provider.setNewCategories = all;
                         Navigator.pushReplacementNamed(context, '/login');
                       }
                     },
@@ -156,7 +157,7 @@ class _HomePageState extends State<HomePage> {
                         children: [
                           GestureDetector(
                             onTap: () {
-                              notesProvider.setNewCategories = 'All';
+                              provider.setNewCategories = all;
                             },
                             child: Container(
                               padding: const EdgeInsets.symmetric(
@@ -164,32 +165,32 @@ class _HomePageState extends State<HomePage> {
                                 vertical: 4,
                               ),
                               decoration: BoxDecoration(
-                                color: notesProvider.selectedCategories == 'All'
-                                    ? Colors.blue // Change color when selected
-                                    : const Color.fromRGBO(246, 245, 245, 1),
+                                color: provider.selectedCategories == all
+                                    ? appBlue // Change color when selected
+                                    : Colors.white,
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: Text(
-                                'All',
+                                all,
                                 style: TextStyle(
-                                    color: notesProvider.selectedCategories == 'All'
+                                    color: provider.selectedCategories == all
                                         ? Colors.white
                                         : Colors.black.withOpacity(0.6)),
                               ),
                             ),
                           ),
-                          ...notesProvider.categoriesList!.map((category) {
+                          ...provider.categoriesList!.map((category) {
                             return GestureDetector(
                               onTap: () {
-                                notesProvider.setNewCategories = category;
+                                provider.setNewCategories = category;
                               },
                               child: Container(
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 8, vertical: 4),
                                 decoration: BoxDecoration(
                                   color: category ==
-                                      notesProvider.selectedCategories
-                                      ? Colors.blue // Change color when selected
+                                      provider.selectedCategories
+                                      ? appBlue// Change color when selected
                                       : const Color.fromRGBO(246, 245, 245, 1),
                                   borderRadius: BorderRadius.circular(10),
                                 ),
@@ -197,7 +198,7 @@ class _HomePageState extends State<HomePage> {
                                   category,
                                   style: TextStyle(
                                       color: category ==
-                                          notesProvider.selectedCategories
+                                          provider.selectedCategories
                                           ? Colors.white
                                           : Colors.black.withOpacity(0.6)),
                                 ),
@@ -215,11 +216,11 @@ class _HomePageState extends State<HomePage> {
                     stream: fireStoreService.getNotesStreams(),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
-                        notesProvider.fetchNotes(auth.currentUser?.uid);
-                        List<Note> notes = notesProvider.notes;
-                        String selectedCategory = notesProvider.selectedCategories ?? 'All';
+                        provider.fetchNotes(auth.currentUser?.uid);
+                        List<Note> notes = provider.notes;
+                        String selectedCategory = provider.selectedCategories ?? all;
                         String searchText = _searchController.text;
-                        List<Note> filteredNotes = notesProvider.filterNotes(notes, selectedCategory, searchText);
+                        List<Note> filteredNotes = provider.filterNotes(notes, selectedCategory, searchText);
                         if (filteredNotes.isNotEmpty) {
                           return Expanded(
                             child: GridView.builder(
@@ -237,7 +238,7 @@ class _HomePageState extends State<HomePage> {
                                 List<dynamic> tags = filteredNotes[index].tags;
                                 return GestureDetector(
                                   onTap: (){
-                                    notesProvider.isForNoteUpdate = true;
+                                    provider.isForNoteUpdate = true;
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -253,7 +254,7 @@ class _HomePageState extends State<HomePage> {
                                   child: Card(
                                     semanticContainer: true,
                                     clipBehavior: Clip.antiAliasWithSaveLayer,
-                                    color: const Color.fromRGBO(254, 227, 148,1).withOpacity(0.8),
+                                    color: notesBackGroundColor,
                                     child: Padding(
                                       padding: const EdgeInsets.all(10.0),
                                       child: Column(
@@ -286,7 +287,7 @@ class _HomePageState extends State<HomePage> {
                                                   ),
                                                   child: Text(
                                                     '# $tag',
-                                                    style: const TextStyle(color: Colors.blue),
+                                                    style: TextStyle(color: appBlue),
                                                   ),
                                                 );
                                               }).toList(),
@@ -313,7 +314,7 @@ class _HomePageState extends State<HomePage> {
                           return  Expanded(
                             child: Center(
                               child: Image.asset(
-                                'assets/images/empty_notes.png'
+                                  emptyImage,
                               ),
                             ),
                           );
@@ -330,12 +331,12 @@ class _HomePageState extends State<HomePage> {
             ),
             floatingActionButton: FloatingActionButton(
               shape: const CircleBorder(),
-              backgroundColor: const Color.fromRGBO(10,150,248,1),
+              backgroundColor: appBlue,
               foregroundColor: Colors.white,
               onPressed: () {
-                notesProvider.isForNoteUpdate = false;
+                provider.isForNoteUpdate = false;
                  Posthog().capture(
-                  eventName: 'Notes_adding_screen',
+                  eventName: notesScreenView,
                 );
                 Navigator.pushNamed(context, '/notesScreen');
               },

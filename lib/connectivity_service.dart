@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:notes_app/common/conts_text.dart';
 
 class ConnectivityService {
   late List<ConnectivityResult> _connectionStatus = [ConnectivityResult.none];
@@ -25,14 +26,14 @@ class ConnectivityService {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('No Internet Connection'),
-          content: Text('Please check your internet connection and try again.'),
+          title: const Text(noInternetConnection),
+          content: const Text(pleaseConnectToInternet),
           actions: <Widget>[
-            TextButton(
+            ElevatedButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('OK'),
+              child: const Text(ok),
             ),
           ],
         );

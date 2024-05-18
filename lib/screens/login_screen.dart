@@ -119,10 +119,10 @@ class _LoginScreenState extends State<LoginScreen> {
       showToast(message: userLoggedInSuccessFull);
       await Posthog().identify(
           userId: email,
-          userProperties: {"email": email},
+          userProperties: {'email': email},
       );
       await Posthog().capture(
-        eventName: 'user_logged_In',
+        eventName: loggInEvent,
       );
       Navigator.pushNamed(context, "/home");
     } else {

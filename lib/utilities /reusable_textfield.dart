@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/material.dart';
+import 'package:notes_app/common/colors.dart';
 import 'package:provider/provider.dart';
 
 import '../viewModel/notes_app_viewModel.dart';
@@ -92,7 +93,7 @@ class _FormContainerWidgetState extends State<FormContainerWidget> {
                           ? Icons.visibility_off
                           : Icons.visibility,
                       color: obscureTextProvider.obscureText == false
-                          ? Colors.blue
+                          ? appBlue
                           : Colors.grey,
                     ),
                   )

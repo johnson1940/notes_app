@@ -68,5 +68,26 @@ const String error = "Error";
 
 const String pageNotFound = "Page not found!";
 
+const String ok = 'Ok';
+
+const String noInternetConnection = "No Internet Connection";
+
+const String pleaseConnectToInternet = "Please check your internet connection and try again.";
+
+const String notesScreenView = "Notes_adding_screen";
+
+const String filteringEvent = "Filtering_event";
+
+const String signOutEvent = "sign_out_event";
+
+const String loggInEvent = "user_logged_In";
+
+const String signUpEvent = "user_signed_up";
+
+const String notesAddingEvent = "Notes_adding_event";
+
+const String all = "All";
+
+const String deleteEvent = 'Delete_event';
 
 
