@@ -60,6 +60,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   controller: _passwordController,
                   labelText: password,
                   hintText: enterPassword,
+                  isPasswordField: true,
+                  maxLines: 1,
                 )
             ),
             const SizedBox(height: 40),

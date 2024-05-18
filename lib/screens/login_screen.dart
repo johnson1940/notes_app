@@ -69,7 +69,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 controller: _passwordController,
                 labelText: password,
                 hintText: enterPassword,
-              )
+                isPasswordField: true,
+                maxLines: 1,
+              ),
             ),
             const SizedBox(height: 40),
             CustomElevatedButton(

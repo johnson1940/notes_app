@@ -248,7 +248,10 @@ class _NotesAddingScreenState extends State<NotesAddingScreen> {
                         children: [
                           Padding(
                             padding: const EdgeInsets.only(left: 10),
-                            child: Text(notesProvider.selectedCategories ?? 'Select the Categories'),
+                            child: Text(
+                                notesProvider.selectedCategories == 'All' ?
+                                'Uncategorized' :
+                                (notesProvider.selectedCategories ??  'Uncategorized')),
                           ),
                           const Spacer(),
                           const Icon(Icons.arrow_drop_down_outlined)

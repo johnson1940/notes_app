@@ -86,7 +86,7 @@ class NoteProvider extends ChangeNotifier {
     return notes;
   }
 
-  String _addCategories = 'All';
+  String _addCategories = 'Uncategorized';
 
   set setNewCategories(String categories){
     _addCategories = categories;
@@ -156,5 +156,43 @@ class NoteProvider extends ChangeNotifier {
     }
     notifyListeners();
   }
+
+
+  bool _obscureText = true;
+
+  bool get obscureText => _obscureText;
+
+  void toggleObscureText() {
+    _obscureText = !_obscureText;
+    notifyListeners();
+  }
+
+  bool _isForSearch = false;
+
+  bool get isForSearch => _isForSearch;
+
+  set setIsSearch(bool isSearch) {
+    _isForSearch = isSearch;
+    notifyListeners();
+  }
+
+  // String _selectedCategory = 'All';
+  // List<String> _categoriesList = ['Entertainment', 'Technology'];
+  //
+  // String get selectedCategory => _selectedCategory;
+  //
+  // List<String> get categoriesList2 => _categoriesList;
+  //
+  // set setNewCategory(String category) {
+  //   _selectedCategory = category;
+  //   notifyListeners();
+  // }
+  //
+  // void addCategory2(String category) {
+  //   if (!_categoriesList.contains(category)) {
+  //     _categoriesList.add(category);
+  //     notifyListeners();
+  //   }
+  // }
 
 }
