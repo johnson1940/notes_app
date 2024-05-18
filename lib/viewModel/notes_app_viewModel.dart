@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../model_class/notes_model.dart';
+
 class NoteProvider extends ChangeNotifier {
   List<String> _titles = [];
 
@@ -19,6 +21,33 @@ class NoteProvider extends ChangeNotifier {
 
   List<DocumentSnapshot> noteList = [];
 
+  List<Note> _notes = [];
+
+  List<Note> get notes => _notes;
+
+  void setNotes(List<Note> notes) {
+    _notes = notes;
+    notifyListeners();
+  }
+
+  bool? _isForUpdate;
+
+  set isForNoteUpdate(bool isForUpdate){
+    _isForUpdate = isForUpdate;
+    notifyListeners();
+  }
+
+  bool? get isForUpdate => _isForUpdate;
+
+  bool _isNotedDeleted = false;
+
+  set setIsNotesDeleted(bool isNotedDeleted) {
+    _isNotedDeleted = isNotedDeleted;
+    notifyListeners();
+  }
+
+  bool get isNotedDeleted => _isNotedDeleted;
+
   Future<void> fetchNotes(String? currentUserUid) async {
     try {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
@@ -26,12 +55,12 @@ class NoteProvider extends ChangeNotifier {
           .where('userId', isEqualTo: currentUserUid)
           .get();
       noteList = querySnapshot.docs;
-
-      _titles = [];
       List<String> categories = [];
-      for (var document in noteList) {
-        String category = document['categories'];
-        List<dynamic> tags = document['tags'];
+      List<Note> notes = querySnapshot.docs.map((doc) => Note.fromFirestore(doc)).toList();
+      setNotes(notes);
+      for (var note in notes) {
+        String category = note.categories ?? '';
+        List<dynamic> tags = note.tags;
         if (!categories.contains(category)) {
           categories.add(category);
         }
@@ -43,7 +72,22 @@ class NoteProvider extends ChangeNotifier {
     }
   }
 
-  String _addCategories = 'Select the categories';
+  List<Note> filterNotes(List<Note> notes, String selectedCategory, String searchText) {
+    if (selectedCategory.isNotEmpty &&
+        selectedCategory != 'All') {
+      notes = notes.where((note) => note.categories == selectedCategory).toList();
+    }
+
+    if (searchText.isNotEmpty) {
+      final searchTag = searchText.toLowerCase();
+      notes = notes.where((note) =>
+      note.tags.any((tag) => tag.toLowerCase().contains(searchTag)))
+          .toList();
+    }
+    return notes;
+  }
+
+  String _addCategories = 'All';
 
   set setNewCategories(String categories){
     _addCategories = categories;

@@ -111,71 +111,205 @@ class _NotesAddingScreenState extends State<NotesAddingScreen> {
         ),
         backgroundColor: Colors.white,
         actions: [
-          GestureDetector(
-            onTap: () {
-              showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: Text('Add Tag'),
-                  content: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      TextField(
-                        controller: _tagsController,
-                        decoration: InputDecoration(
-                          hintText: 'Enter tag name',
-                        ),
-                      ),
-                      SizedBox(height: 20),
-                      Wrap(
-                        children: [
-                          for (var tag in notesProvider.tags)...[
-                            GestureDetector(
-                              onTap: () {
-                                notesProvider.addSelectedTags([tag]);
-                                Navigator.pop(context);
-                              },
-                              child: Container(
-                                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                margin: EdgeInsets.all(4),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: Colors.white70,
+          PopupMenuButton<String>(
+            offset: Offset(0, 45),
+            onSelected: (String result) {
+            },
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+               PopupMenuItem<String>(
+                value: 'Tags',
+                child: GestureDetector(
+                  onTap: (){
+                    Navigator.pop(context);
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: Text('Add Tag'),
+                        content: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            TextField(
+                                      controller: _tagsController,
+                                      decoration: InputDecoration(
+                                        hintText: 'Enter tag name',
+                                      ),
+                                    ),
+                                    SizedBox(height: 20),
+                                    Wrap(
+                                      children: [
+                                        for (var tag in notesProvider.tags)...[
+                                          GestureDetector(
+                                            onTap: () {
+                                              notesProvider.setIsNotesDeleted = false;
+                                              notesProvider.addSelectedTags([tag]);
+                                              Navigator.pop(context);
+                                            },
+                                            child: Container(
+                                              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                              margin: EdgeInsets.all(4),
+                                              decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.circular(10),
+                                                color: Colors.white70,
+                                              ),
+                                              child: Text(tag),
+                                            ),
+                                          ),
+                                        ]
+                                      ],
+                                    ),
+                                  ],
                                 ),
-                                child: Text(tag),
+                                actions: [
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                      _tagsController.clear();
+                                    },
+                                    child: Text('Cancel'),
+                                  ),
+                                  ElevatedButton(
+                                    child: Text('Add'),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                      notesProvider.addTags([_tagsController.text]);
+                                      notesProvider.addSelectedTags([_tagsController.text]);
+                                      _tagsController.clear();
+                                    },
+                                  ),
+                                ],
                               ),
-                            ),
-                          ]
-                        ],
+                            );
+                      },
+                  child: Row(
+                    children: [
+                      Image.asset(
+                          'assets/images/tag.png',
+                        width: 18,
+                        height: 18,
                       ),
+                      SizedBox(
+                        width: 5,
+                      ),
+                      Text('Add Tags'),
                     ],
                   ),
-                  actions: [
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        _tagsController.clear();
-                      },
-                      child: Text('Cancel'),
-                    ),
-                    ElevatedButton(
-                      child: Text('Add'),
-                      onPressed: () {
-                        Navigator.pop(context);
-                        notesProvider.addTags([_tagsController.text]);
-                        notesProvider.addSelectedTags([_tagsController.text]);
-                        _tagsController.clear();
-                      },
-                    ),
-                  ],
                 ),
-              );
-            },
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Icon(Icons.bookmark),
-            ),
+              ),
+              if(notesProvider.isForUpdate ?? false)...[
+              PopupMenuItem<String>(
+                value: 'Delete',
+                child: GestureDetector(
+                  onTap: (){
+                    Navigator.pop(context);
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text('Confirm'),
+                          content: Text('Delete this note?'),
+                          actions: [
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.pop(context); // Close the dialog
+                              },
+                              child: Text('Cancel'),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                                fireStoreService.deleteNote(documentId ?? '');
+                                Navigator.pop(context);
+                              },
+                              child: Text('Yes'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                  child: Row(
+                    children: [
+                      Icon(Icons.delete,color: Colors.black,),
+                      SizedBox(width: 5,),
+                      Text('Deleter'),
+                    ],
+                  ),
+                ),
+              ),
+             ],
+            ],
           ),
+          // IconButton(
+          //     onPressed: (){
+          //
+          //     },
+          //     icon: Icon(Icons.more_vert),
+          // ),
+          // GestureDetector(
+          //   onTap: () {
+          //     showDialog(
+          //       context: context,
+          //       builder: (context) => AlertDialog(
+          //         title: Text('Add Tag'),
+          //         content: Column(
+          //           mainAxisSize: MainAxisSize.min,
+          //           children: [
+          //             TextField(
+          //               controller: _tagsController,
+          //               decoration: InputDecoration(
+          //                 hintText: 'Enter tag name',
+          //               ),
+          //             ),
+          //             SizedBox(height: 20),
+          //             Wrap(
+          //               children: [
+          //                 for (var tag in notesProvider.tags)...[
+          //                   GestureDetector(
+          //                     onTap: () {
+          //                       notesProvider.addSelectedTags([tag]);
+          //                       Navigator.pop(context);
+          //                     },
+          //                     child: Container(
+          //                       padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          //                       margin: EdgeInsets.all(4),
+          //                       decoration: BoxDecoration(
+          //                         borderRadius: BorderRadius.circular(10),
+          //                         color: Colors.white70,
+          //                       ),
+          //                       child: Text(tag),
+          //                     ),
+          //                   ),
+          //                 ]
+          //               ],
+          //             ),
+          //           ],
+          //         ),
+          //         actions: [
+          //           ElevatedButton(
+          //             onPressed: () {
+          //               Navigator.pop(context);
+          //               _tagsController.clear();
+          //             },
+          //             child: Text('Cancel'),
+          //           ),
+          //           ElevatedButton(
+          //             child: Text('Add'),
+          //             onPressed: () {
+          //               Navigator.pop(context);
+          //               notesProvider.addTags([_tagsController.text]);
+          //               notesProvider.addSelectedTags([_tagsController.text]);
+          //               _tagsController.clear();
+          //             },
+          //           ),
+          //         ],
+          //       ),
+          //     );
+          //   },
+          //   child: Padding(
+          //     padding: const EdgeInsets.all(8.0),
+          //     child: Icon(Icons.bookmark),
+          //   ),
+          // ),
         ],
         title: Text(''),
       ),
@@ -203,8 +337,8 @@ class _NotesAddingScreenState extends State<NotesAddingScreen> {
                         return List.generate(
                           notesProvider.categoriesList?.length ?? 0,
                               (index) => PopupMenuItem(
-                            value: index + 1,
-                            child: Text(notesProvider.categoriesList?[index] ?? ''),
+                                 value: index + 1,
+                                 child: Text(notesProvider.categoriesList?[index] ?? ''),
                           ),
                         );
                       },
@@ -222,6 +356,7 @@ class _NotesAddingScreenState extends State<NotesAddingScreen> {
                   ),
                 ],
               ),
+              SizedBox(height: 10,),
               Padding(
                 padding: EdgeInsets.only(left: 10),
                 child: Wrap(
@@ -269,6 +404,10 @@ class _NotesAddingScreenState extends State<NotesAddingScreen> {
                     flex: 2,
                     child: TextField(
                       controller: _titleController,
+                      style:  TextStyle(
+                        fontSize: 25,
+                        color: Colors.black.withOpacity(0.5),
+                      ),
                       decoration: InputDecoration(
                         hintText: 'Title',
                         border: InputBorder.none,
@@ -288,6 +427,10 @@ class _NotesAddingScreenState extends State<NotesAddingScreen> {
               TextFormField(
                 controller: _descriptionController,
                 maxLines: 20,
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.black.withOpacity(0.5),
+                ),
                 decoration: InputDecoration(
                   hintText: 'Notes here',
                   border: InputBorder.none,
@@ -304,33 +447,42 @@ class _NotesAddingScreenState extends State<NotesAddingScreen> {
                 ),
               ),
               SizedBox(height: 20),
-              ElevatedButton(
-                  onPressed: (){
-                    fireStoreService.updateNotes(
-                       documentId ?? '',
-                      _titleController.text,
-                      _descriptionController.text,
-                      user.uid,
-                      notesProvider.selectedCategories ?? '',
-                      notesProvider.tagsSelected,
-                    );
-                    Navigator.pop(context);
-                  },
-                  child: Text('Update'),
-              ),
+              // ElevatedButton(
+              //     onPressed: (){
+              //       fireStoreService.updateNotes(
+              //          documentId ?? '',
+              //         _titleController.text,
+              //         _descriptionController.text,
+              //         user.uid,
+              //         notesProvider.selectedCategories ?? '',
+              //         notesProvider.tagsSelected,
+              //       );
+              //       Navigator.pop(context);
+              //     },
+              //     child: Text('Update'),
+              // ),
               SizedBox(height: 5),
             ],
           ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.save_sharp),
         elevation: 0,
+        shape: CircleBorder(),
         foregroundColor: Colors.white,
         backgroundColor: Colors.blue,
         onPressed: () {
           String tagsString = _tagsController.text.trim();
           List<String> tags = tagsString.split(',');
+          (notesProvider.isForUpdate ?? false) ?
+          fireStoreService.updateNotes(
+            documentId ?? '',
+            _titleController.text,
+            _descriptionController.text,
+            user.uid,
+            notesProvider.selectedCategories ?? '',
+            notesProvider.tagsSelected,
+          ) :
           fireStoreService.addNotes(
             _titleController.text,
             _descriptionController.text,
@@ -344,6 +496,7 @@ class _NotesAddingScreenState extends State<NotesAddingScreen> {
           notesProvider.clearSelectedTags();
           Navigator.pop(context);
         },
+        child: Icon(Icons.check),
       ),
     );
   }

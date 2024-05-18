@@ -5,9 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-
 import '../firebase_cloud_storage/cloud_service.dart';
-import '../utilities /reusable_elevated_button.dart';
+import '../model_class/notes_model.dart';
 import '../viewModel/notes_app_viewModel.dart';
 import 'notes_adding_screen.dart';
 
@@ -25,6 +24,12 @@ class _HomePageState extends State<HomePage> {
   bool _isSearching = false;
 
   @override
+  void initState() {
+    context.read<NoteProvider>().setNewCategories = 'All';
+    super.initState();
+  }
+
+  @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
@@ -36,6 +41,7 @@ class _HomePageState extends State<HomePage> {
       child: Scaffold(
         appBar: _isSearching
             ? AppBar(
+
            toolbarHeight: 70,
           automaticallyImplyLeading: false,
           title: Padding(
@@ -139,7 +145,7 @@ class _HomePageState extends State<HomePage> {
                   // Add the "All" category container
                   GestureDetector(
                     onTap: (){
-                      notesProvider.setNewCategories = 'All';
+                     notesProvider.setNewCategories = 'All';
                     },
                     child: Container(
                     padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -174,9 +180,9 @@ class _HomePageState extends State<HomePage> {
                         category,
                         style: TextStyle(color: category == notesProvider.selectedCategories ?
                         Colors.white : Colors.black.withOpacity(0.6)),
-                      ),
-                    ),
-                  );
+                        ),
+                       ),
+                      );
                                 }).toList(),
                               ],
                   ),
@@ -190,30 +196,14 @@ class _HomePageState extends State<HomePage> {
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     notesProvider.fetchNotes(auth.currentUser?.uid);
-                    List<DocumentSnapshot> noteList = notesProvider.noteList;
-
-                    // Filter notes based on selected category
-                    if (notesProvider.selectedCategories != null &&
-                        (notesProvider.selectedCategories?.isNotEmpty ?? false) && notesProvider.selectedCategories != 'Select the categories'
-                      && (notesProvider.selectedCategories != 'All')) {
-                      noteList = noteList.where((note) => note['categories'] == notesProvider.selectedCategories).toList();
-                    }
-                    else {
-                      noteList = notesProvider.noteList;
-                    }
-                    if (_searchController.text.isNotEmpty) {
-                      final searchTag = _searchController.text.toLowerCase();
-                      noteList = noteList.where((note) =>
-                      note['tags'] != null &&
-                          note['tags']
-                              .any((tag) => tag.toString().toLowerCase().contains(searchTag)))
-                          .toList();
-                    }
-
-                    if (noteList.isNotEmpty) {
+                    List<Note> notes = notesProvider.notes;
+                    String selectedCategory = notesProvider.selectedCategories ?? 'All';
+                    String searchText = _searchController.text;
+                    List<Note> filteredNotes = notesProvider.filterNotes(notes, selectedCategory, searchText);
+                    if (filteredNotes.isNotEmpty) {
                       return Expanded(
                         child: GridView.builder(
-                          itemCount: noteList.length,
+                          itemCount: filteredNotes.length,
                           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 2,
                             mainAxisSpacing: 1.0,
@@ -221,16 +211,16 @@ class _HomePageState extends State<HomePage> {
                             childAspectRatio: 0.8,
                           ),
                           itemBuilder: (context, index) {
-                            DocumentSnapshot document = noteList[index];
-                            String noteText = document['title'];
-                            String description = document['description'];
-                            String id = document.id;
-                            List<dynamic> tags = document['tags'];
-                            Timestamp timestamp = document['timeStamp'];
+                            String noteText = filteredNotes[index].title;
+                            String description = filteredNotes[index].description;
+                            String id = filteredNotes[index].id;
+                            List<dynamic> tags = filteredNotes[index].tags;
+                            Timestamp timestamp = filteredNotes[index].timeStamp;
                             DateTime dateTime = timestamp.toDate();
                             String formattedDate = DateFormat('yyyy-MM-dd').format(dateTime);
                             return GestureDetector(
                               onTap: (){
+                                notesProvider.isForNoteUpdate = true;
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -246,27 +236,31 @@ class _HomePageState extends State<HomePage> {
                               child: Card(
                                 semanticContainer: true,
                                 clipBehavior: Clip.antiAliasWithSaveLayer,
-                                color: Color.fromRGBO(254, 227, 148,1),
-                                child: ListTile(
-                                  title: Text(noteText),
-                                  subtitle: Column(
-                                   crossAxisAlignment: CrossAxisAlignment.start,
+                                color: Color.fromRGBO(254, 227, 148,1).withOpacity(0.8),
+                                child: Padding(
+                                  padding: EdgeInsets.all(10.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        description,
+                                          filteredNotes[index].title,
+                                        style: TextStyle(
+                                          fontSize: 19,
+                                          fontWeight: FontWeight.w400
+                                        ),
+                                      ),
+                                      Text(
+                                        filteredNotes[index].description,
                                         overflow: TextOverflow.ellipsis,
                                         maxLines: 4,
                                       ),
-                                      SizedBox(
-                                        height: 80,
-                                      ),
-                                      // Add some vertical spacing between subtitle and additional text
+                                      Spacer(),
                                       SingleChildScrollView(
                                         scrollDirection: Axis.horizontal,
                                         child: Wrap(
-                                          spacing: 6, // Adjust spacing between containers
-                                          runSpacing: 6, // Adjust spacing between rows of containers
-                                          children: tags.map((tag) {
+                                          spacing: 6,
+                                          runSpacing: 6,
+                                          children: filteredNotes[index].tags.map((tag) {
                                             return Container(
                                               padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                               decoration: BoxDecoration(
@@ -282,10 +276,11 @@ class _HomePageState extends State<HomePage> {
                                         ),
                                       ),
                                       SizedBox(
-                                        height: 20,
+                                        height: 10,
                                       ),
                                       Text(
-                                          formattedDate,
+                                        DateFormat('yyyy-MM-dd').format(filteredNotes[index].timeStamp.toDate()),
+                                        style: TextStyle(color: Colors.grey),
                                       ),
                                     ],
                                   ),
@@ -293,7 +288,6 @@ class _HomePageState extends State<HomePage> {
                               ),
                             );
                           },
-                          padding: EdgeInsets.only(left: 0, right: 0),
                         ),
                       );
                     } else {
@@ -309,15 +303,18 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         floatingActionButton: FloatingActionButton(
-          // isExtended: true,
-          child: Icon(Icons.add),
+          shape: const CircleBorder(),
           backgroundColor: Color.fromRGBO(10,150,248,1),
           foregroundColor: Colors.white,
           onPressed: () {
+            notesProvider.isForNoteUpdate = false;
             Navigator.pushNamed(context, '/notesScreen');
           },
+          // isExtended: true,
+          child: Icon(Icons.add),
         ),
       ),
     );
   }
 }
+

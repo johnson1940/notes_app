@@ -42,6 +42,14 @@ class FireStoreService {
     print('Document with ID $docId updated successfully');
   }
 
+  void deleteNote(String docId) async {
+    try {
+      await notes.doc(docId).delete();
+      print('Note deleted successfully');
+    } catch (e) {
+      print('Error deleting note: $e');
+    }
+  }
 
   // Read the data
 

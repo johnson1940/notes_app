@@ -69,6 +69,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 text: "Signup",
                 textColor: Colors.white,
                 onPressed: (){
+                   FocusScope.of(context).unfocus();
                   _signUp();
                 }
             ),
@@ -98,18 +99,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   void _signUp() async {
-
-
     String email = _emailController.text;
     String password = _passwordController.text;
-
     User? user = await _auth.signUpWithEmailAndPassword(email, password);
-
     if (user != null) {
-     // showToast(message: "User is successfully created");
+     showToast(message: "User is successfully created");
       Navigator.pushNamed(context, "/home");
     } else {
-     // showToast(message: "Some error happend");
+      showToast(message: "Some error happend");
     }
   }
 }

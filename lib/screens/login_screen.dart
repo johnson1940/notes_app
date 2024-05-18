@@ -68,6 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 text: "Login",
                 textColor: Colors.white,
                 onPressed: (){
+                   FocusScope.of(context).unfocus();
                   _signIn();
                 }
             ),
