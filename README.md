@@ -1,16 +1,15 @@
 # notes_app
 
-A new Flutter project.
+## This notes app has this following features
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+1. Add the Notes in fireStore
+2. Update the added notes 
+3. Delete the added notes 
+4. Filtering by tags
+5. Category Swicther 
+6. notes based on the user Id
+7. firebase authentication for login and signup
+8. splash screen 
+9. notes validation - No Empty notes can be saved in firebase
+10. posthog integration.
+11. added connectivity package to listen the user.
