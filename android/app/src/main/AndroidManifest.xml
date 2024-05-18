@@ -2,7 +2,7 @@
     <application
         android:label="notes_app"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/notes_app1">
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -29,6 +29,10 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <meta-data android:name="com.posthog.posthog.API_KEY" android:value="phc_26g3sIag2xlmHAyQZDVL4RjEU9Cr6d3earkcSSIFc9I" />
+        <meta-data android:name="com.posthog.posthog.POSTHOG_HOST" android:value="https://app.posthog.com" />
+        <meta-data android:name="com.posthog.posthog.TRACK_APPLICATION_LIFECYCLE_EVENTS" android:value="true" />
+        <meta-data android:name="com.posthog.posthog.DEBUG" android:value="true" />
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility?hl=en and
