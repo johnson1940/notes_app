@@ -18,6 +18,7 @@ class FormContainerWidget extends StatefulWidget {
   final TextInputType? inputType;
 
   const FormContainerWidget({
+    super.key,
     this.controller,
     this.isPasswordField,
     this.fieldKey,
@@ -33,7 +34,7 @@ class FormContainerWidget extends StatefulWidget {
 
 
   @override
-  _FormContainerWidgetState createState() => new _FormContainerWidgetState();
+  _FormContainerWidgetState createState() =>  _FormContainerWidgetState();
 }
 
 class _FormContainerWidgetState extends State<FormContainerWidget> {
@@ -47,7 +48,7 @@ class _FormContainerWidgetState extends State<FormContainerWidget> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(widget.labelText ?? ''),
-        SizedBox(
+        const SizedBox(
           height: 5,
         ),
         Container(
@@ -59,7 +60,7 @@ class _FormContainerWidgetState extends State<FormContainerWidget> {
           ),
           child: TextFormField(
             maxLines: widget.maxLines,
-            style: TextStyle(color: Colors.black),
+            style: const TextStyle(color: Colors.black),
             controller: widget.controller,
             keyboardType: widget.inputType,
             key: widget.fieldKey,
@@ -70,9 +71,9 @@ class _FormContainerWidgetState extends State<FormContainerWidget> {
             decoration: InputDecoration(
               border: InputBorder.none,
               filled: true,
-              fillColor: Color.fromRGBO(246, 245, 245, 1),
+              fillColor: const Color.fromRGBO(246, 245, 245, 1),
               hintText: widget.hintText,
-              hintStyle: TextStyle(color: Colors.black45),
+              hintStyle: const TextStyle(color: Colors.black45),
               suffixIcon: GestureDetector(
                 onTap: () {
                   setState(() {
@@ -83,7 +84,7 @@ class _FormContainerWidgetState extends State<FormContainerWidget> {
                 widget.isPasswordField == true?
                 Icon(_obscureText ? Icons.visibility_off :
                 Icons.visibility, color: _obscureText == false
-                    ? Colors.blue : Colors.grey,) : Text(""),
+                    ? Colors.blue : Colors.grey,) : const Text(""),
               ),
             ),
           ),

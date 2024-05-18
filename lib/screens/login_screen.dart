@@ -1,11 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:notes_app/utilities%20/reusable_elevated_button.dart';
-
 import '../common/conts_text.dart';
+import '../common/image_string.dart';
+import '../connectivity_service.dart';
 import '../user_auth/fire_base_auth_service.dart';
+import '../utilities /flutter_toast.dart';
 import '../utilities /reusable_textfield.dart';
 
 
@@ -22,15 +22,24 @@ class _LoginScreenState extends State<LoginScreen> {
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
   bool isSigningUp = false;
+
+  final ConnectivityService _connectivityService = ConnectivityService();
+
+  @override
+  void initState() {
+    super.initState();
+    _connectivityService.startMonitoring(context);
+  }
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _connectivityService.stopMonitoring();
     super.dispose();
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -42,48 +51,49 @@ class _LoginScreenState extends State<LoginScreen> {
             Image.asset(
                 width: 120,
                 height: 120,
-                'assets/images/notes_app1.png'
+                notesIconImage,
             ),
-            SizedBox(height: 80),
+            const SizedBox(height: 80),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child:  FormContainerWidget(
                 controller: _emailController,
-                labelText: 'Email',
-                hintText: 'Enter email',
+                labelText: email,
+                hintText: enterEmail,
               )
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: FormContainerWidget(
                 controller: _passwordController,
-                labelText: 'Password',
-                hintText: 'Enter password',
+                labelText: password,
+                hintText: enterPassword,
               )
             ),
-            SizedBox(height: 40),
+            const SizedBox(height: 40),
             CustomElevatedButton(
-                color: Color.fromRGBO(10,150,248,1),
-                text: "Login",
+                color: const Color.fromRGBO(10,150,248,1),
+                text: login,
                 textColor: Colors.white,
                 onPressed: (){
+                  _connectivityService.startMonitoring(context);
                    FocusScope.of(context).unfocus();
                   _signIn();
                 }
             ),
-            SizedBox(height: 40),
+            const SizedBox(height: 40),
             Row(
             mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(donTHaveAccount),
-                SizedBox(width: 2,),
+                const Text(donTHaveAccount),
+                const SizedBox(width: 2,),
                 GestureDetector(
                   onTap: (){
                     Navigator.pushNamed(context, '/signup');
                   },
-                  child: Text(
-                    'Signup',
+                  child: const Text(
+                    signUp,
                     style: TextStyle(
                     decoration: TextDecoration.underline,
                      ),
@@ -98,20 +108,14 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _signIn() async {
-
-
     String email = _emailController.text;
     String password = _passwordController.text;
-
     User? user = await _auth.signInWithEmailAndPassword(email, password);
-
     if (user != null) {
-      print('Successfully Signed In');
-      // showToast(message: "User is successfully created");
+      showToast(message: userAddedSuccessFul);
       Navigator.pushNamed(context, "/home");
     } else {
-      print('Error');
-      // showToast(message: "Some error happend");
+      showToast(message: someErrorHappened);
     }
   }
 }

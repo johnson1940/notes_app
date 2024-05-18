@@ -1,10 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:notes_app/common/conts_text.dart';
 import 'package:notes_app/screens/home_page.dart';
 import 'package:notes_app/screens/login_screen.dart';
 import 'package:notes_app/screens/notes_adding_screen.dart';
 import 'package:notes_app/screens/sign_up_screen.dart';
-import 'package:notes_app/user_auth/fire_base_auth_service.dart';
 import 'package:notes_app/viewModel/notes_app_viewModel.dart';
 import 'package:provider/provider.dart';
 
@@ -12,9 +12,6 @@ import 'package:provider/provider.dart';
 Future<void> main() async {
     WidgetsFlutterBinding.ensureInitialized();
     await Firebase.initializeApp();
-    final FirebaseAuthService _auth = FirebaseAuthService();
-    String? uid = await _auth.getCurrentFirebaseUserUID();
-    String uidAsString = uid ?? "";
     runApp(const MyApp());
 }
 
@@ -28,20 +25,19 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => NoteProvider()),
       ],
       child: MaterialApp(
-        title: 'Flutter Demo',
+        title: notes,
         theme: ThemeData(
-         // colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
           useMaterial3: true,
         ),
-        home: LoginScreen(),
+        home: const LoginScreen(),
         onGenerateRoute: (settings) {
           switch (settings.name) {
             case '/signup':
-              return MaterialPageRoute(builder: (context) => SignUpScreen());
+              return MaterialPageRoute(builder: (context) => const SignUpScreen());
             case '/home':
-              return MaterialPageRoute(builder: (context) => HomePage());
+              return MaterialPageRoute(builder: (context) => const HomePage());
             case '/login':
-              return MaterialPageRoute(builder: (context) => LoginScreen());
+              return MaterialPageRoute(builder: (context) => const LoginScreen());
             case '/notesScreen':
               final args = settings.arguments as NotesArguments?;
               return MaterialPageRoute(
@@ -68,10 +64,10 @@ Route _errorRoute() {
   return MaterialPageRoute(builder: (context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Error'),
+        title: const Text(error),
       ),
-      body: Center(
-        child: Text('Page not found!'),
+      body: const Center(
+        child: Text(pageNotFound),
       ),
     );
   });
@@ -83,9 +79,6 @@ class NotesArguments {
   final List<String>? tags;
   final String? documentId;
 
-
   NotesArguments(this.noteText, this.description, this.tags, this.documentId);
 }
 
-// Example widget classes (SignUpScreen, HomePage, LoginScreen, NotesAddingScreen)
-// should be defined below or in separate files.

@@ -9,21 +9,21 @@ class CustomElevatedButton extends StatelessWidget {
   final VoidCallback onPressed;
 
   const CustomElevatedButton({
-    Key? key,
+    super.key,
     this.width,
     this.height,
     this.textColor,
     required this.color,
     required this.text,
     required this.onPressed,
-  }) : super(key: key);
+  });
 
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Padding(
-      padding: EdgeInsets.only(left: 15, right: 15),
+      padding: const EdgeInsets.only(left: 15, right: 15),
       child: SizedBox(
         width: width ?? size.width * 1,
         height: height ?? 50,

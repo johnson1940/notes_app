@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:notes_app/utilities%20/flutter_toast.dart';
+import '../common/conts_text.dart';
 
 class FireStoreService {
   final CollectionReference notes = FirebaseFirestore.instance.collection('notes');
@@ -39,19 +41,17 @@ class FireStoreService {
       'tags' : tags,
       'timeStamp' : timeStamp != null ? Timestamp.fromDate(DateTime.parse(timeStamp)) : Timestamp.now(), // Update timeStamp if provided
     });
-    print('Document with ID $docId updated successfully');
   }
 
   void deleteNote(String docId) async {
     try {
       await notes.doc(docId).delete();
-      print('Note deleted successfully');
+      showToast(message: notesDeleterSuccessfully);
     } catch (e) {
-      print('Error deleting note: $e');
+      showToast(message:  '$errorDeletingNotes : $e');
     }
   }
 
-  // Read the data
 
   Stream<QuerySnapshot> getNotesStreams() {
     final noteStreams = notes.orderBy('timeStamp',descending: true).snapshots();

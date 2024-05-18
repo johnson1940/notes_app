@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../model_class/notes_model.dart';
 
 class NoteProvider extends ChangeNotifier {
-  List<String> _titles = [];
+  final List<String> _titles = [];
 
   void setListOfCategories(List<String> cate){
     _titles.addAll(cate);
@@ -15,7 +15,6 @@ class NoteProvider extends ChangeNotifier {
 
   void addCategory(String category) {
     _titles.add(category);
-    print('Categories : ${_titles}');
     notifyListeners(); // Assuming notifyListeners is defined somewhere else
   }
 
@@ -91,7 +90,6 @@ class NoteProvider extends ChangeNotifier {
 
   set setNewCategories(String categories){
     _addCategories = categories;
-    print('printstate : ${_addCategories}');
     notifyListeners();
   }
 
@@ -112,11 +110,6 @@ class NoteProvider extends ChangeNotifier {
   List<String> _tags = [];
 
   List<String> get tags => _tags;
-
-  // void addTag(String tagName) {
-  //   _tags.add(tagName);
-  //   print('tags : ${tags}');
-  // }
 
   List<String> _tagsSelected = [];
 
@@ -142,7 +135,6 @@ class NoteProvider extends ChangeNotifier {
         _tags.add(tag.toString());
       }
     }
-    //print('the saved tags : ${_tags}');
   }
 
   void removeSelectedTag(String tag) {
@@ -153,10 +145,8 @@ class NoteProvider extends ChangeNotifier {
 
   void filterNotesByTag(String tag) {
     if (tag.isEmpty) {
-      // If tag is empty, reset noteList to show all notes
       _tagsSelected.clear();
     } else {
-      // Filter notes based on the entered tag
       _tagsSelected = noteList
           .where((note) => note['tags'] != null && note['tags'].contains(tag))
           .map<List<String>>((note) => List<String>.from(note['tags'])) // Convert dynamic list to List<String>

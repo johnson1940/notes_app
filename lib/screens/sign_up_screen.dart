@@ -1,8 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import '../common/conts_text.dart';
+import '../common/image_string.dart';
 import '../user_auth/fire_base_auth_service.dart';
 import '../utilities /flutter_toast.dart';
 import '../utilities /reusable_elevated_button.dart';
@@ -43,48 +42,48 @@ class _SignUpScreenState extends State<SignUpScreen> {
             Image.asset(
                 width: 120,
                 height: 120,
-                'assets/images/notes_app1.png'
+                notesIconImage,
             ),
-            SizedBox(height: 80),
+            const SizedBox(height: 80),
             Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child:  FormContainerWidget(
                   controller: _emailController,
-                  labelText: 'Email',
-                  hintText: 'Enter email',
+                  labelText: email,
+                  hintText: enterEmail,
                 )
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: FormContainerWidget(
                   controller: _passwordController,
-                  labelText: 'Password',
-                  hintText: 'Enter password',
+                  labelText: password,
+                  hintText: enterPassword,
                 )
             ),
-            SizedBox(height: 40),
+            const SizedBox(height: 40),
             CustomElevatedButton(
-                color: Color.fromRGBO(10,150,248,1),
-                text: "Signup",
+                color: const Color.fromRGBO(10,150,248,1),
+                text: signUp,
                 textColor: Colors.white,
                 onPressed: (){
                    FocusScope.of(context).unfocus();
                   _signUp();
                 }
             ),
-            SizedBox(height: 40),
+            const SizedBox(height: 40),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(alreadyHaveAnAccount),
-                SizedBox(width: 2,),
+                const Text(alreadyHaveAnAccount),
+                const SizedBox(width: 2,),
                 GestureDetector(
                   onTap: (){
                     Navigator.pop(context);
                   },
-                  child: Text(
-                    'Login',
+                  child: const Text(
+                    login,
                     style: TextStyle(
                       decoration: TextDecoration.underline,
                     ),
@@ -103,10 +102,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
     String password = _passwordController.text;
     User? user = await _auth.signUpWithEmailAndPassword(email, password);
     if (user != null) {
-     showToast(message: "User is successfully created");
+     showToast(message: userAddedSuccessFul);
       Navigator.pushNamed(context, "/home");
     } else {
-      showToast(message: "Some error happend");
+      showToast(message: someErrorHappened);
     }
   }
 }
