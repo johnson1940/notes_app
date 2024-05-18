@@ -90,4 +90,6 @@ const String all = "All";
 
 const String deleteEvent = 'Delete_event';
 
+const String emptyNotesErrorMessage = 'Please enter title and description';
+
 

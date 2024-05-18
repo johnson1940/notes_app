@@ -9,6 +9,7 @@ import 'package:posthog_flutter/posthog_flutter.dart';
 import 'package:provider/provider.dart';
 import '../connectivity_service.dart';
 import '../firebase_cloud_storage/cloud_service.dart';
+import '../utilities /flutter_toast.dart';
 import '../viewModel/notes_app_viewModel.dart';
 
 class NotesAddingScreen extends StatefulWidget {
@@ -100,6 +101,7 @@ class _NotesAddingScreenState extends State<NotesAddingScreen> {
                     showDialog(
                       context: context,
                       builder: (context) => AlertDialog(
+                        backgroundColor: Colors.white,
                         title: const Text(addTags),
                         content: Column(
                           mainAxisSize: MainAxisSize.min,
@@ -141,10 +143,10 @@ class _NotesAddingScreenState extends State<NotesAddingScreen> {
                                       Navigator.pop(context);
                                       _tagsController.clear();
                                     },
-                                    child: const Text(cancel),
+                                    child: Text(cancel,style: TextStyle(color: appBlue)),
                                   ),
                                   ElevatedButton(
-                                    child: const Text(add),
+                                    child: Text(add,style: TextStyle(color: appBlue),),
                                     onPressed: () {
                                       Navigator.pop(context);
                                       notesProvider.addTags([_tagsController.text]);
@@ -188,7 +190,7 @@ class _NotesAddingScreenState extends State<NotesAddingScreen> {
                               onPressed: () {
                                 Navigator.pop(context); // Close the dialog
                               },
-                              child: const Text(cancel),
+                              child: Text(cancel,style: TextStyle(color: appBlue)),
                             ),
                             ElevatedButton(
                               onPressed: () {
@@ -199,7 +201,7 @@ class _NotesAddingScreenState extends State<NotesAddingScreen> {
                                 );
                                 Navigator.pop(context);
                               },
-                              child: const Text(yes),
+                              child: Text(yes,style: TextStyle(color: appBlue)),
                             ),
                           ],
                         );
@@ -236,7 +238,7 @@ class _NotesAddingScreenState extends State<NotesAddingScreen> {
                   ),
                   IntrinsicWidth(
                     child: PopupMenuButton(
-                      color: const Color.fromRGBO(246, 245, 245, 1),
+                      color: Colors.white,
                       offset: const Offset(0, 40),
                       onSelected: (value) {
                         notesProvider.setNewCategories = notesProvider.categoriesList?[value - 1] ?? '';
@@ -360,6 +362,10 @@ class _NotesAddingScreenState extends State<NotesAddingScreen> {
         foregroundColor: Colors.white,
         backgroundColor: appBlue,
         onPressed: () {
+          if (_titleController.text.isEmpty || _descriptionController.text.isEmpty) {
+            showToast( message: emptyNotesErrorMessage);
+            return;
+          }
           _connectivityService.startMonitoring(context);
           (notesProvider.isForUpdate ?? false) ?
           fireStoreService.updateNotes(
@@ -388,6 +394,19 @@ class _NotesAddingScreenState extends State<NotesAddingScreen> {
         },
         child: const Icon(Icons.check),
       ),
+    );
+  }
+}
+
+class CustomSnackBar extends StatelessWidget {
+  final String message;
+
+  const CustomSnackBar({required this.message});
+
+  @override
+  Widget build(BuildContext context) {
+    return SnackBar(
+      content: Text(message),
     );
   }
 }
