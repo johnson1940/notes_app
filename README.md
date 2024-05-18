@@ -6,7 +6,7 @@
 2. Update the added notes 
 3. Delete the added notes 
 4. Filtering by tags
-5. Category Swicther 
+5. Category Swictcher
 6. notes based on the user Id
 7. firebase authentication for login and signup
 8. splash screen 
