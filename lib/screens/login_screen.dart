@@ -4,7 +4,7 @@ import 'package:notes_app/utilities%20/reusable_elevated_button.dart';
 import 'package:posthog_flutter/posthog_flutter.dart';
 import '../common/conts_text.dart';
 import '../common/image_string.dart';
-import '../connectivity_service.dart';
+import '../connecitivity_service/connectivity_service.dart';
 import '../user_auth/fire_base_auth_service.dart';
 import '../utilities /flutter_toast.dart';
 import '../utilities /reusable_textfield.dart';
