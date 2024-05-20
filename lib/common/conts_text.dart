@@ -52,6 +52,8 @@ const String yes = "Yes";
 
 const String title = "Title";
 
+const String description = 'Description';
+
 const String notesHere = "Notes here";
 
 const String emailAlreadyInUse = "email-already-in-use";
@@ -91,5 +93,7 @@ const String all = "All";
 const String deleteEvent = 'Delete_event';
 
 const String emptyNotesErrorMessage = 'Please enter title and description';
+
+const String unCategorized = 'Uncategorized';
 
 
